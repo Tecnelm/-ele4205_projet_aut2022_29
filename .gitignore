@@ -32,3 +32,4 @@
 *.app
 # Remove Build repository 
 build/*
+*/build/*
