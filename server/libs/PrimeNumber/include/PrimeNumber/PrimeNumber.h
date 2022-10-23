@@ -12,5 +12,6 @@
 #include <stdlib.h>
 
 size_t calculate_primes(uint32_t* data, uint32_t max);
+int main_prime_number();
 
 #endif /* PRIMENUMBER_H_ */

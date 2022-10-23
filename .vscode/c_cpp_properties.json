@@ -2,9 +2,9 @@
     "configurations": [
         {
             "name": "Linux",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
             "includePath": [
-                "${default}",
-                "${workspaceFolder}/server/PrimeNumber/inc"
+                "${default}"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang-11",

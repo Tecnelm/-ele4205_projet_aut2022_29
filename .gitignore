@@ -33,3 +33,5 @@
 # Remove Build repository 
 build/*
 */build/*
+*/.vscode
+*/odroid-deploy-gdb.sh

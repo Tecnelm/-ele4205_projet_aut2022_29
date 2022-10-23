@@ -1,3 +1,49 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.12)
+set(CONFIG_CMAKE_DIR ../cmake)
+project(ELE4205_PROJECT_Server)
 
-add_subdirectory("./PrimeNumber")
+set(MODULE_NAME ele4205_project)
+
+set(MODULE_HEADER_FILES 
+    
+)
+
+set(MODULE_SOURCE_FILES
+    src/main.cpp
+)
+
+set(MODULE_LIBS
+    PrimeNumber
+)
+
+option(USE_CROSS_COMPILE_ODROID_POKY "Use cross compile odroid poky toolchain" ON)
+
+if(${USE_CROSS_COMPILE_ODROID_POKY})
+    message(STATUS "USE CROSS COMPILE POKY TOOLCHAIN")
+    include(${CONFIG_CMAKE_DIR}/cross-compile.cmake)
+endif()
+
+add_executable(${MODULE_NAME} ${MODULE_SOURCE_FILES} ${MODULE_HEADER_FILES})
+
+
+
+include(${CONFIG_CMAKE_DIR}/unset-opencv-variables.cmake)
+find_package(OpenCV 3.1 REQUIRED)
+if(OpenCV_FOUND)
+message( STATUS "OpenCV 3.1 library found in : ${OpenCV_DIR}")
+else(OpenCV_FOUND)
+message(FATAL ERROR "Librarie OpenCV introuvable!")
+endif ()
+
+add_subdirectory(libs)
+
+target_link_libraries(${MODULE_NAME} ${OpenCV_LIBRARIES} ${MODULE_LIBS})
+target_include_directories(${MODULE_NAME}  PUBLIC ${OpenCV_INCLUDE_DIRS})
+
+target_include_directories(${MODULE_NAME}  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ele4205_project>
+    $<INSTALL_INTERFACE:include/ele4205_project>
+    PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)

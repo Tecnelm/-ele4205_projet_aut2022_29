@@ -29,7 +29,7 @@
                     "${config:ODROIDC2.TARGET_IP}",
                     "${config:ODROIDC2.TARGET_PORT}",
                     "${config:ODROIDC2.PROGRAM}",
-                    "${workspaceFolder}/build/"
+                    "${workspaceFolder}/build/Livrable1/"
                 ]
             }
     ]
