@@ -1,12 +1,12 @@
-/* boneCVtiming.cpp
- *
- * Copyright Derek Molloy, School of Electronic Engineering, Dublin City University
- * www.derekmolloy.ie
- *
- * Redistribution and use in source and binary forms, with or without modification, are permitted
- * provided that source code redistributions retain this notice.
- *
- * This software is provided AS IS and it comes with no warranties of any type.
+/**
+ * @file main.cpp
+ * @author clement garrigues and nathan garnier (clement.garrigues@polymtl.ca and nathan.garnier.gaudet@polymtl.ca)
+ * @brief 
+ * @version 0.1
+ * @date 2022-10-24
+ * 
+ * @copyright Copyright (c) 2022
+ * 
  */
 
 #include "Resolution/Resolution.hpp"
