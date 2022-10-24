@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.12)
-set(CONFIG_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR/}../cmake/)
+if(NOT DEFINED CMAKE_MODULE_PATH)
+    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/)
+endif()
 project(ELE4205_PROJECT_CLIENT)
 
 
 
-include(${CONFIG_CMAKE_DIR}/unset-opencv-variables.cmake)
+include(unset-opencv-variables)
 
 find_package(OpenCV 2.4 REQUIRED)
 if(OpenCV_FOUND)
