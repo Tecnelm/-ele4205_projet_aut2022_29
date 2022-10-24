@@ -5,7 +5,7 @@
 #include <time.h>
 
 using namespace Resolution;
-
+using namespace cv;
 Camera::Camera(int index)
     : capture_(index)
 {
@@ -13,9 +13,32 @@ Camera::Camera(int index)
 Camera::Camera()
     : Camera(0) {};
 
-std::ostream& operator<<(std::ostream& os, const Camera& camera)
+void Camera::recordVideo(int time, const std::string& filename)
 {
-    // os << camera.resolution_;
+    Mat output;
+    VideoWriter videoOutput(filename, this->fourcc_, this->resolution_.FPS, Size { this->resolution_.WIDTH, this->resolution_.HEIGHT });
+    int nFrame = (time) * this->resolution_.FPS;
+    for (int i = 0; i < nFrame; i++) {
+        this->capture_ >> output;
+        if (output.empty()) {
+            std::cout << "ERROR GET IMAGE" << std::endl;
+            break;
+        }
+        // videoOutput << output;
+        videoOutput.write(output);
+    }
+    videoOutput.release();
+}
+
+void Camera::setFourcc(int fourcc)
+{
+    this->fourcc_ = fourcc;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Camera& camera)
+{
+    os << camera.resolution_;
     return os;
 }
 

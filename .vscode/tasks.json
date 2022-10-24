@@ -26,10 +26,11 @@
                 "command": "sh",
                 "args": [
                     "odroid-deploy-gdb.sh",
+                    "${command:cmake.buildDirectory}",
                     "${config:ODROIDC2.TARGET_IP}",
                     "${config:ODROIDC2.TARGET_PORT}",
-                    "${config:ODROIDC2.PROGRAM}",
-                    "${workspaceFolder}/build/Livrable1/"
+                    "${command:cmake.launchTargetFilename}",
+                    "${command:cmake.launchTargetDirectory}"
                 ]
             }
     ]

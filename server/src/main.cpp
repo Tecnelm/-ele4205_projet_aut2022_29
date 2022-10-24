@@ -11,20 +11,26 @@
 
 #include "Resolution/Resolution.hpp"
 #include <Camera/Camera.hpp>
-#include <PrimeNumber/PrimeNumber.h>
+#include <cstdlib>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <time.h>
-
 using namespace std;
 using namespace cv;
 
-int main()
+int main(int argc, char const* argv[])
 {
-    Camera camera;
-    // std::cout << main_prime_number() << std::endl;
-    //  Resolution::Resolution_t reso {0,0,0};
-    //  std::cout << reso;
-    std::cout << Resolution::resolutions.find("176x144")->second;
+    Camera camera(0);
+    camera.setFourcc(CV_FOURCC('M', 'J', 'P', 'G'));
+#ifdef DEBUG
+    camera.changeResolution(Resolution::resolutions.find("1280x720")->second);
+    camera.recordVideo(5, "capture-liv1.avi");
+#else
+    if (argc == 4) {
+        camera.changeResolution(Resolution::resolutions.find(argv[2])->second);
+        camera.recordVideo(atoi(argv[3]), (argv[1]));
+    }
+
+#endif
     return 0;
 }

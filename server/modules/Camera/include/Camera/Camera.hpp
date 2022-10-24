@@ -8,9 +8,12 @@ public:
     Camera();
     Camera(int index);
     friend std::ostream& operator<<(std::ostream& os, const Camera& camera);
+    void recordVideo(int time, const std::string& filename);
+    void setFourcc(int fourcc);
 
 private:
     Resolution::Resolution_t resolution_;
     int detectFps();
+    int fourcc_;
     cv::VideoCapture capture_;
 };
