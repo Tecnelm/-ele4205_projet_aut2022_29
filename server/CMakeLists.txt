@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
-if(NOT DEFINED CONFIG_CMAKE_DIR)
-    set(CONFIG_CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/)
+if(NOT DEFINED CMAKE_MODULE_PATH)
+    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/)
 endif()
 
 if(NOT DEFINED COMMON_DATA_DIR)
@@ -30,13 +30,13 @@ option(USE_CROSS_COMPILE_ODROID_POKY "Use cross compile odroid poky toolchain" O
 
 if(${USE_CROSS_COMPILE_ODROID_POKY})
     message(STATUS "USE CROSS COMPILE POKY TOOLCHAIN")
-    include(${CONFIG_CMAKE_DIR}/cross-compile.cmake)
+    include(cross-compile)
 endif()
 
 add_executable(${MODULE_NAME} ${MODULE_SOURCE_FILES} ${MODULE_HEADER_FILES})
 
 
-include(${CONFIG_CMAKE_DIR}/unset-opencv-variables.cmake)
+include(unset-opencv-variables)
 
 find_package(OpenCV 3.1 REQUIRED)
 if(OpenCV_FOUND)
