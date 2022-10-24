@@ -1,7 +1,7 @@
 #!/bin/sh
-cd client 
+#cd client 
 #ln -s ../.vscode ./
-cd ../server 
+#cd ../server 
 #ln -s ../.vscode ./
 #ln -s ../odroid-deploy-gdb.sh ./
-ln -s ../commun/ ./
+#ln -s ../commun/ ./
