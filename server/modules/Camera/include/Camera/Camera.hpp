@@ -16,4 +16,5 @@ private:
     int detectFps();
     int fourcc_;
     cv::VideoCapture capture_;
+    const int detect_fps_frame_  = 2;
 };

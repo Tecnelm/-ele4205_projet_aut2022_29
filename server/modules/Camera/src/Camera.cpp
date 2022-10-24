@@ -62,8 +62,7 @@ int Camera::detectFps()
     struct timespec start, end;
     clock_gettime(CLOCK_REALTIME, &start);
 
-    int frames = 10;
-    for (int i = 0; i < frames; i++) {
+    for (int i = 0; i < detect_fps_frame_; i++) {
         this->capture_ >> frame;
         if (frame.empty()) {
             std::cout << "Failed to capture an image" << std::endl;
@@ -75,5 +74,5 @@ int Camera::detectFps()
 
     clock_gettime(CLOCK_REALTIME, &end);
     double difference = (end.tv_sec - start.tv_sec) + (double)(end.tv_nsec - start.tv_nsec) / 1000000000.0d;
-    return frames / difference;
+    return detect_fps_frame_ / difference;
 }
