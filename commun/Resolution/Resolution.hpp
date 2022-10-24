@@ -1,12 +1,12 @@
 /**
  * @file Resolution.hpp
  * @author clement garrigues and nathan garnier (clement.garrigues@polymtl.ca and nathan.garnier.gaudet@polymtl.ca)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2022-10-24
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 #include <iostream>
 #include <map>
