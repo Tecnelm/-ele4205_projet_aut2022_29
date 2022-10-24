@@ -22,7 +22,6 @@ set(MODULE_SOURCE_FILES
 set(MODULE_LIBS
     Camera
     Resolution
-    PrimeNumber
 )
 
 

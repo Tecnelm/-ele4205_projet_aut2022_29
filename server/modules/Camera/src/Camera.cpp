@@ -1,6 +1,5 @@
 #include "Camera/Camera.hpp"
 #include "Resolution/Resolution.hpp"
-#include <PrimeNumber/PrimeNumber.h>
 #include <iostream>
 #include <time.h>
 
@@ -62,7 +61,7 @@ int Camera::detectFps()
     struct timespec start, end;
     clock_gettime(CLOCK_REALTIME, &start);
 
-    for (int i = 0; i < detect_fps_frame_; i++) {
+    for (int i = 0; i < detectFpsFrame_; i++) {
         this->capture_ >> frame;
         if (frame.empty()) {
             std::cout << "Failed to capture an image" << std::endl;
@@ -74,5 +73,5 @@ int Camera::detectFps()
 
     clock_gettime(CLOCK_REALTIME, &end);
     double difference = (end.tv_sec - start.tv_sec) + (double)(end.tv_nsec - start.tv_nsec) / 1000000000.0d;
-    return detect_fps_frame_ / difference;
+    return detectFpsFrame_ / difference;
 }

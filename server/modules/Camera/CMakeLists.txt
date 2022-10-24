@@ -22,7 +22,6 @@ src/Camera.cpp
 
 set(MODULE_LIBS
     Resolution
-    PrimeNumber
 )
 
 add_library(${LIB_NAME}
