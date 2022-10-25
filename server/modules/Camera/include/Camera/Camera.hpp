@@ -76,5 +76,11 @@ private:
      * @brief Number of frames used to detect FPS of the camera
      *
      */
-    const int detectFpsFrame_ = 2;
+    const int detectFpsFrame_ = 10;
+
+    /**
+     * @brief Number of image to get to setup the camera and get the right amount of fps
+     *
+     */
+    const int nImageBeforeDetectFPS_ = 2;
 };

@@ -67,7 +67,9 @@ int Camera::detectFps()
     }
 
     cv::Mat frame, edges;
-
+    for (int i = 0; i < this->nImageBeforeDetectFPS_; i++) {
+        this->capture_ >> frame;
+    }
     struct timespec start, end;
     clock_gettime(CLOCK_REALTIME, &start);
 
