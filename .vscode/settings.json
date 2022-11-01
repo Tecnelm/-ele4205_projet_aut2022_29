@@ -1,5 +1,4 @@
 {
-    
     "C_Cpp.clang_format_fallbackStyle": "WebKit",
     "cmake.sourceDirectory": "${workspaceFolder}",
     "cmake.buildDirectory": "${workspaceFolder}/build/",
@@ -9,5 +8,12 @@
         "TARGET_IP": "192.168.7.2",
         /* Target Port Settings */
         "TARGET_PORT": "3000"
-    }
+    },
+    "INFO": {
+        "POKY_INSTALL_DIR": "${env:POKY_INSTALL_DIR}",
+    },
+    "cmake.configureArgs": [
+        "-DPOKY_INSTALL_DIR=${env:POKY_INSTALL_DIR}",
+        "-DUSE_CROSS_COMPILE_ODROID_POKY=OFF"
+    ]
 }

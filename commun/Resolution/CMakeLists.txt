@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 set(LIB_NAME
-  Resolution
+  Resolution_${PROJECT_NAME}
 )
 
 
@@ -11,9 +11,6 @@ set(LIB_INCLUDE_DIR
 
 set(LIB_HEADER_FILES 
   ${LIB_INCLUDE_DIR}/Resolution.hpp
-)
-set(PROJECT_NAME 
-  ${LIB_NAME}
 )
 
 set(LIB_SOURCE_FILES

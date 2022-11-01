@@ -1,13 +1,33 @@
 cmake_minimum_required(VERSION 3.12)
-if(NOT DEFINED CMAKE_MODULE_PATH)
-    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/)
-endif()
-project(ELE4205_PROJECT_CLIENT)
 
+project(ELE4205_PROJECT_client)
+
+if(NOT DEFINED CMAKE_MODULE_PATH)
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/)
+endif()
+
+if(NOT DEFINED COMMON_DATA_DIR)
+    set(COMMON_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../commun/)
+endif()
+
+
+
+set(MODULE_NAME ${PROJECT_NAME})
+set(MODULE_HEADER_FILES 
+    
+)
+
+set(MODULE_SOURCE_FILES
+    src/main.cpp
+)
+
+set(MODULE_LIBS    
+    Resolution_${PROJECT_NAME}
+    tcpLengthFramer_${PROJECT_NAME}
+)
 
 
 include(unset-opencv-variables)
-
 find_package(OpenCV 2.4 REQUIRED)
 if(OpenCV_FOUND)
 message( STATUS "OpenCV 2.4 library found in : ${OpenCV_DIR}")
@@ -15,8 +35,18 @@ else(OpenCV_FOUND)
 message(FATAL ERROR "Librarie OpenCV introuvable!")
 endif ()
 
-add_executable(Hello main.cpp)
+add_subdirectory(${COMMON_DATA_DIR} commun/)
+add_subdirectory(modules)
 
+add_executable(${PROJECT_NAME} ${MODULE_SOURCE_FILES})
+add_dependencies(${MODULE_NAME} ${MODULE_LIBS})
 
-target_link_libraries(Hello ${OpenCV_LIBRARIES})
-target_include_directories(Hello  PRIVATE ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(${MODULE_NAME} ${OpenCV_LIBRARIES} ${MODULE_LIBS})
+target_include_directories(${MODULE_NAME}  PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_include_directories(${MODULE_NAME}  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ele4205_project>
+    $<INSTALL_INTERFACE:include/ele4205_project>
+    PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)

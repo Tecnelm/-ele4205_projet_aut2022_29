@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+
 # Remove Build repository 
 build/*
 */build/*
@@ -37,3 +38,8 @@ build/*
 */odroid-deploy-gdb.sh
 */doc/*
 doc/*
+*.avi
+
+# Ignore change on VScode config
+.vscode/*
+.vscode/

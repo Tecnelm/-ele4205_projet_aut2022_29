@@ -1,16 +1,24 @@
 cmake_minimum_required(VERSION 3.12)
 
+#https://stackoverflow.com/questions/34143265/undefined-reference-to-symbol-pthread-createglibc-2-2-5
+set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+set(CMAKE_HAVE_THREADS_LIBRARY 1)
+set(CMAKE_USE_WIN32_THREADS_INIT 0)
+set(CMAKE_USE_PTHREADS_INIT 1)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+
+project(ELE4205_PROJECT_server)
 if(NOT DEFINED CMAKE_MODULE_PATH)
-    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/)
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/)
 endif()
 
 if(NOT DEFINED COMMON_DATA_DIR)
     set(COMMON_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../commun/)
 endif()
 
-project(ELE4205_PROJECT_Server)
 
-set(MODULE_NAME ele4205_project)
+set(MODULE_NAME ${PROJECT_NAME})
 set(MODULE_HEADER_FILES 
     
 )
@@ -21,7 +29,9 @@ set(MODULE_SOURCE_FILES
 
 set(MODULE_LIBS
     Camera
-    Resolution
+    Resolution_${PROJECT_NAME}
+    tcpLengthFramer_${PROJECT_NAME}
+    
 )
 
 
@@ -34,9 +44,7 @@ endif()
 
 add_executable(${MODULE_NAME} ${MODULE_SOURCE_FILES} ${MODULE_HEADER_FILES})
 
-
 include(unset-opencv-variables)
-
 find_package(OpenCV 3.1 REQUIRED)
 if(OpenCV_FOUND)
 message( STATUS "OpenCV 3.1 library found in : ${OpenCV_DIR}")
@@ -47,6 +55,7 @@ endif ()
 add_subdirectory(${COMMON_DATA_DIR} commun)
 add_subdirectory(modules)
 
+add_dependencies(${MODULE_NAME} ${MODULE_LIBS})
 target_link_libraries(${MODULE_NAME} ${OpenCV_LIBRARIES} ${MODULE_LIBS})
 target_include_directories(${MODULE_NAME}  PUBLIC ${OpenCV_INCLUDE_DIRS})
 target_include_directories(${MODULE_NAME}  PRIVATE

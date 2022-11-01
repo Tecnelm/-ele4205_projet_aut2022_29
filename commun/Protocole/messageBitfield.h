@@ -1,0 +1,2 @@
+#define ELE4205_OK 0b1
+#define ELE4205_QUIT 0b10

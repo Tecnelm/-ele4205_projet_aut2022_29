@@ -1,13 +1,13 @@
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR arm64)
 
-if (DEFINED ENV{POKY_INSTALL_DIR})
-    set(POKY_INSTALL_DIR $ENV{POKY_INSTALL_DIR})
-else()
-    set(POKY_INSTALL_DIR "/opt/poky/2.1.3/")
+if (NOT DEFINED POKY_INSTALL_DIR)
+set(POKY_INSTALL_DIR "/opt/poky/2.1.3/")
 endif()
 
-
+if (NOT EXISTS ${POKY_INSTALL_DIR})
+message(FATAL_ERROR "POKY_INSTALL_DIR \"${POKY_INSTALL_DIR}\": Does not exist")
+endif()
 
 message(STATUS "Use poky install directory ${POKY_INSTALL_DIR}")
 set(SYSROOTS "${POKY_INSTALL_DIR}/sysroots/")

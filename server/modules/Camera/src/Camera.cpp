@@ -9,34 +9,75 @@
  *
  */
 #include "Camera/Camera.hpp"
+#include "GrabThread.hpp"
 #include "Resolution/Resolution.hpp"
 #include <iostream>
+#include <thread>
 #include <time.h>
 
 using namespace Resolution;
 using namespace cv;
 Camera::Camera(int index)
-    : capture_(index)
+    : indexCamera_(index)
+    , capture_()
+    , mutexFrame_()
+    , threadGrabImage_(capture_, mutexFrame_),
+    mutexCamera_()
 {
 }
 Camera::Camera()
     : Camera(0) {};
 
+bool Camera::startCamera(bool useThread)
+{
+    
+    if (!this->capture_.isOpened()) {
+        this->capture_.open(indexCamera_);
+        if (!this->capture_.isOpened()) {
+            std::cout << "ERROR: Failed to connect to the camera" << std::endl;
+            return 0;
+        }
+    }
+    this->capture_.set(CV_CAP_PROP_FRAME_WIDTH, resolution_.WIDTH);
+    this->capture_.set(CV_CAP_PROP_FRAME_HEIGHT, resolution_.HEIGHT);
+    cv::Mat frame;
+    for (int i = 0; i < this->nImageBeforeDetectFPS_; i++) {
+        this->capture_ >> frame;
+    }
+    if (useThread)
+        threadGrabImage_.start();
+    return 1;
+}
+
+void Camera::releaseCamera()
+{
+    threadGrabImage_.stop();
+    this->capture_.release();
+}
+
+void Camera::setIndex(const int index)
+{
+    indexCamera_ = index;
+}
+
 void Camera::recordVideo(int time, const std::string& filename)
 {
-    Mat output;
-    VideoWriter videoOutput(filename, this->fourcc_, this->resolution_.FPS, Size { this->resolution_.WIDTH, this->resolution_.HEIGHT });
-    int nFrame = (time) * this->resolution_.FPS;
-    for (int i = 0; i < nFrame; i++) {
-        this->capture_ >> output;
-        if (output.empty()) {
-            std::cout << "ERROR GET IMAGE" << std::endl;
-            break;
+    bool stopThread = false;
+
+    if (startCamera()) {
+        Mat output;
+        VideoWriter videoOutput(filename, this->fourcc_, this->resolution_.FPS, Size { this->resolution_.WIDTH, this->resolution_.HEIGHT });
+        int nFrame = (time) * this->resolution_.FPS;
+        for (int i = 0; i < nFrame; i++) {
+            output << *this;
+            if (output.empty()) {
+                std::cout << "ERROR GET IMAGE" << std::endl;
+                break;
+            }
+            videoOutput << output;
         }
-        // videoOutput << output;
-        videoOutput.write(output);
+        releaseCamera();
     }
-    videoOutput.release();
 }
 
 void Camera::setFourcc(int fourcc)
@@ -50,40 +91,61 @@ operator<<(std::ostream& os, const Camera& camera)
     os << camera.resolution_;
     return os;
 }
+cv::Mat& operator<<(cv::Mat& output, Camera& camera)
+{
+    if (camera.capture_.isOpened()) {
+        camera.read(output);
+    }
+    return output;
+}
 
 void Camera::changeResolution(const Resolution_t& resolution)
 {
+    mutexCamera_.lock();
     this->resolution_ = resolution;
-    this->capture_.set(CV_CAP_PROP_FRAME_WIDTH, resolution.WIDTH);
-    this->capture_.set(CV_CAP_PROP_FRAME_HEIGHT, resolution.HEIGHT);
     this->resolution_.FPS = this->detectFps();
+    mutexCamera_.unlock();
 }
 
 int Camera::detectFps()
 {
-    if (!this->capture_.isOpened()) {
+
+    if (!this->startCamera(false)) {
         std::cout << "ERROR: Failed to connect to the camera" << std::endl;
         return 0;
     }
+    threadGrabImage_.stop();
 
-    cv::Mat frame, edges;
-    for (int i = 0; i < this->nImageBeforeDetectFPS_; i++) {
-        this->capture_ >> frame;
-    }
+    cv::Mat frame;
     struct timespec start, end;
     clock_gettime(CLOCK_REALTIME, &start);
 
     for (int i = 0; i < detectFpsFrame_; i++) {
-        this->capture_ >> frame;
-        if (frame.empty()) {
+
+        if (!capture_.grab()) {
             std::cout << "Failed to capture an image" << std::endl;
             return 0;
         }
-        cv::cvtColor(frame, edges, CV_BGR2GRAY);
-        cv::Canny(edges, edges, 0, 30, 3);
     }
-
     clock_gettime(CLOCK_REALTIME, &end);
     double difference = (end.tv_sec - start.tv_sec) + (double)(end.tv_nsec - start.tv_nsec) / 1000000000.0d;
+    this->releaseCamera();
     return detectFpsFrame_ / difference;
+}
+
+bool Camera::read(cv::OutputArray array, int flag)
+{
+    mutexCamera_.lock(); // prevent that two thread ask for an image at the same time 
+    bool read=false;
+    while (!threadGrabImage_.isFrameAvailable() && threadGrabImage_.isAlive())
+        ;
+    mutexFrame_.lock(); // prevent against grab thread edit change the image during copy 
+    if (threadGrabImage_.isFrameAvailable()) {
+        threadGrabImage_.getFrame().copyTo(array);
+        threadGrabImage_.resetFrame();
+        read = true;
+    }
+    mutexFrame_.unlock();
+    mutexCamera_.unlock();
+    return read;;
 }

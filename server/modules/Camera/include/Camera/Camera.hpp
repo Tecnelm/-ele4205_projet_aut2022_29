@@ -8,11 +8,16 @@
  * @copyright Copyright (c) 2022
  *
  */
+#pragma once
+
+#include "GrabThread.hpp"
 #include "Resolution/Resolution.hpp"
 #include <iostream>
+#include <mutex>
 #include <opencv2/opencv.hpp>
-#pragma once
+
 class Camera {
+
 public:
     /**
      * @brief Change the resolution of camera input and output
@@ -53,6 +58,47 @@ public:
      */
     void setFourcc(int fourcc);
 
+    /**
+     * @brief function ton start and acurate the frame and fps of the camera
+     *
+     * @param useThread Bool To tel if we are using or not multithreading read with defaukt value to true
+     * @return true if successfully start the camera
+     * @return false In case of error during opening camera
+     */
+    bool startCamera(bool useThread = true);
+
+    /**
+     * @brief Stop the camera record
+     *
+     */
+    void releaseCamera();
+
+    /**
+     * @brief Set the Index of the camera to open
+     *
+     * @param index
+     */
+    void setIndex(int index);
+
+    /**
+     * @brief Grab an image on the camera
+     * @details /!\ The camera MUST be allready opened
+     * @param output cv::Mat openCv matrix where to put the image
+     * @param camera Camera where to get the image
+     * @return cv::Mat The matrix where the image where put;
+     */
+    friend cv::Mat& operator<<(cv::Mat& output, Camera& camera);
+
+    /**
+     * @brief Read the current frame on the camera
+     * 
+     * @param image Image where copy the data 
+     * @param flag 
+     * @return true If a frame has been read
+     * @return false If no frame has been read
+     */
+    bool read(cv::OutputArray image, int flag = 0);
+
 private:
     Resolution::Resolution_t resolution_;
     /**
@@ -83,4 +129,25 @@ private:
      *
      */
     const int nImageBeforeDetectFPS_ = 2;
+
+    /**
+     * @brief Index of the camera to open with OpenCV
+     *
+     */
+    int indexCamera_;
+    /**
+     * @brief Mutex to synchronyse frame generate in GrabThread to make a sage copy
+     * 
+     */
+    std::mutex mutexFrame_;
+    /**
+     * @brief GrabThread in charge of read in continue frame of the camera
+     * 
+     */
+    GrabThread threadGrabImage_;
+    /**
+     * @brief Mutex to prevent asking at the same time for an image or editing function
+     * 
+     */
+    std::mutex mutexCamera_;
 };
