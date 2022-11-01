@@ -3,9 +3,9 @@
 [TOC]
 
 This project has been realize in an educational context. 
-
 The objectiv of this project is to realize and application composed by :
-- Server : located on and SBC ([OdroidC2](https://www.hardkernel.com/shop/odroid-c2/))
+
+- Server : located on an SBC ([OdroidC2](https://www.hardkernel.com/shop/odroid-c2/))
 - Client : located on the host computer
 
 
@@ -16,11 +16,9 @@ To set up the environement execute the folowing command:
 
 Download poky odroid toolchain and install it.
 
-You can also generate your toolchain with the build tool *Yocto* (folowing instruction in LAB[1])
+You can also generate your toolchain with the build tool _Yocto_ (folowing instruction in LAB[1])
 
-:information_source: In case of non default path of pokytoolchain set **POKY_INSTALL_DIR** in your environement variable. 
-
-> export POKY_INSTALL_DIR="path/to/poky/odroid"
+ℹ️ In case of non default path of pokytoolchain set **POKY_INSTALL_DIR** option in cmake see **build section**.. 
      
 structure of poky_install_dir :
 
@@ -55,19 +53,163 @@ structure of poky_install_dir :
 
 
 ### Dependencies
-- Opencv *2.4* on Client 
-- Opencv *3.1* on Server 
+
+- Opencv _2.4_ on Client 
+- Opencv _3.1_ on Server 
 - Poky-odroid-toolchain 
-- cmake *MINIMUM VERSION 3.12*
+- cmake _MINIMUM VERSION 3.12_
 - build-essential 
+
+#### Build OpenCV 
+You can follow this [link](https://gist.github.com/Tecnelm/fae22ae217672171c8e6aa50bf31b260) and make the necessary modification /!\ No support will be given. We assume that you know what you are doing.
+
+#### Multiple package version use 
+In case of wanting to build Server and client Target you will need to have OpenCV3.1 and OpenCV2.4 installed **at the same time** to provide this feature. Find pakage feature looking for name `<PackageName>[version]`. For example with OpenCv3.1 : library can be install in `/usr/local/OpenCv3.1`. 
 
 ### Build
     
     bash
     cd ele4205_projet_aut2022_29
-    cmake . -B build
+    cmake   -DPOKY_INSTALL_DIR="<path/to/poky/odroid>"\
+            -DUSE_CROSS_COMPILE_ODROID_POKY=ON\
+            . -B build
+
     cmake --build build/
     
-Executable will be located in `build/client/***` for the client.
+Executable will be located in `build/client/ELE4205_PROJECT_client` for the client.
 
-Executable will be located in `build/server/ele4205_project` 
+Executable will be located in `build/server/ELE4205_PROJECT_server` for the server. 
+
+### Cmake Option 
+
+- `POKY_INSTALL_DIR` : Poky odroid installation sysroot . Default value : `/opt/poky/2.1.3/`
+- `USE_CROSS_COMPILE_ODROID_POKY` : Option to set _ON_ or _OFF_ the cross compilation . Default value :`ON`  
+
+### Vscode 
+#### Debugger
+To help Debugging on VSCode we write two debugger launch Task:
+- One remote 
+- One local 
+
+##### Local 
+
+        {
+            "name": "GDB local",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+##### Remote 
+
+        {
+            "name": "GDB remote",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "targetArchitecture": "arm64",
+            "preLaunchTask": "odroid-deploy-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set sysroot ",
+                    "text": "set sysroot ${config:INFO.POKY_INSTALL_DIR}/sysroots/aarch64-poky-linux/"
+                }
+            ],
+            "miDebuggerPath": "${config:INFO.POKY_INSTALL_DIR}/sysroots/x86_64-pokysdk-linux/usr/bin/aarch64-poky-linux/aarch64-poky-linux-gdb",
+            "miDebuggerServerAddress": "${config:ODROIDC2.TARGET_IP}:${config:ODROIDC2.TARGET_PORT}",
+        }
+##### Known Issue
+
+Due to implementation of vscode debugger using it with in crossplatform debugging cause a lot of delay. 
+
+#### Include 
+To provide good include intellisense you need to add to your _c_cpp_properties.json_ the folowing line.
+
+- `"configurationProvider": "ms-vscode.cmake-tools"`
+- `"compileCommands": "${workspaceFolder}/build/compile_commands.json"`
+
+#### Settings 
+
+During the project we used the folowing setting in _settings.json_
+
+    {
+        "C_Cpp.clang_format_fallbackStyle": "WebKit",
+        "cmake.sourceDirectory": "${workspaceFolder}",
+        "cmake.buildDirectory": "${workspaceFolder}/build/",
+        "C_Cpp.errorSquiggles": "Disabled",
+        "ODROIDC2": {
+            /* Target Device Settings */
+            "TARGET_IP": "192.168.7.2",
+            /* Target Port Settings */
+            "TARGET_PORT": "3000"
+        },
+        "INFO": {
+            "POKY_INSTALL_DIR": "${env:POKY_INSTALL_DIR}",
+        },
+        "cmake.configureArgs": [
+            "-DPOKY_INSTALL_DIR=${env:POKY_INSTALL_DIR}",
+            "-DUSE_CROSS_COMPILE_ODROID_POKY=OFF"
+        ]
+    }
+
+### Script 
+#### local_deploy.sh
+Fast way to deploy the executable on target and run it. Before sending the executable compile the target. 
+
+- Deploy IP address : _192.168.7.2_
+- Programm Path on target : `/home/root/`
+- Programm Path host : `./build/<target>/ELE4205_PROJECT_<target>`
+- <target> can take value _client_ or _server_. 
+
+Example of use: 
+
+    ./local_deploy.sh <target> 
+
+#### odroid-deploy-gdb.sh 
+Deploy the program and run remote debugger on the target. 
+
+- <1> : Build directory.
+- <2> : Target IP address.
+- <3> : Target remote debugger port.
+- <4> : Name of the executable.
+- <5> : Path where the executable is.
+  
+Example of use:
+
+    ./odroid-deploy <1> <2> <3> <4> <5>
+
+#### Mount_usb_ether 
+
+This script allow you to mount ethernet over usb for the odroid. 
+
+    #!/bin/bash 
+
+    #set IF=enp0s20f0u7
+    IF=`ip a | grep usb0 | cut -f2 -d:  `
+
+    sudo ip addr add 192.168.7.1/24 dev $IF
+    sudo ip link set usb0 up
+
