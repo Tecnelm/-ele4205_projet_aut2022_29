@@ -14,6 +14,6 @@
     },
     "cmake.configureArgs": [
         "-DPOKY_INSTALL_DIR=${env:POKY_INSTALL_DIR}",
-        "-DUSE_CROSS_COMPILE_ODROID_POKY=OFF"
+        "-DUSE_CROSS_COMPILE_ODROID_POKY=ON"
     ]
 }

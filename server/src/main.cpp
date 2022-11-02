@@ -29,8 +29,8 @@ using namespace cv;
 
 #define PORT 4099
 
-int livrable2()
-{
+int main(int argc, char const* argv[]) {
+
     int server_fd;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
@@ -130,29 +130,4 @@ int livrable2()
 
     shutdown(server_fd, SHUT_RDWR);
     return 0;
-}
-
-int livrable1()
-{
-
-    Camera camera(0);
-    camera.setFourcc(CV_FOURCC('M', 'J', 'P', 'G'));
-#ifdef DEBUG
-    camera.changeResolution(Resolution::resolutions.at("1280x720"));
-    camera.recordVideo(5, "capture-liv1.avi");
-#else
-    if (argc == 4) {
-        camera.changeResolution(Resolution::resolutions.at(argv[2]));
-        camera.recordVideo(atoi(argv[3]), (argv[1]));
-    }
-
-#endif
-    return 0;
-}
-
-int main(int argc, char const* argv[])
-{
-    return livrable2();
-    //return livrable1();
-    // return test();
 }

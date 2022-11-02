@@ -32,7 +32,7 @@ int main(int argc, const char** argv)
     serv_addr.sin_port = htons(PORT);
 
     // Convert IPv4 and IPv6 addresses from text to binary
-    if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
+    if (inet_pton(AF_INET, "192.168.7.2", &serv_addr.sin_addr) <= 0) {
         printf("\nInvalid address/ Address not supported \n");
         return -1;
     }
@@ -54,7 +54,7 @@ int main(int argc, const char** argv)
     dec_image = cv::imdecode(tempData, cv::IMREAD_ANYCOLOR);
     cv::imshow("pic", dec_image);
 
-    while(cv::waitKey(1000) != 'q'){
+    while(cv::waitKey(30) != 27){
 
         uint32_t answer = ELE4205_OK;
         std::vector<uint8_t> packetAnswer = std::vector<uint8_t>(sizeof(uint32_t));
