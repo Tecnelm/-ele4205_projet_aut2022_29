@@ -20,18 +20,20 @@ endif()
 
 set(MODULE_NAME ${PROJECT_NAME})
 set(MODULE_HEADER_FILES 
-    
+    include/ele4205_project/ServerApplication.hpp
 )
 
 set(MODULE_SOURCE_FILES
     src/main.cpp
+    src/ServerApplication.cpp
 )
 
 set(MODULE_LIBS
     Camera
     Resolution_${PROJECT_NAME}
     tcpLengthFramer_${PROJECT_NAME}
-    
+    TCPServer_${PROJECT_NAME}
+    PacketEngine_${PROJECT_NAME}
 )
 
 
@@ -55,7 +57,6 @@ endif ()
 add_subdirectory(${COMMON_DATA_DIR} commun)
 add_subdirectory(modules)
 
-add_dependencies(${MODULE_NAME} ${MODULE_LIBS})
 target_link_libraries(${MODULE_NAME} ${OpenCV_LIBRARIES} ${MODULE_LIBS})
 target_include_directories(${MODULE_NAME}  PUBLIC ${OpenCV_INCLUDE_DIRS})
 target_include_directories(${MODULE_NAME}  PRIVATE

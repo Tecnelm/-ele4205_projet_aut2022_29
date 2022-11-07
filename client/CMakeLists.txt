@@ -19,11 +19,16 @@ set(MODULE_HEADER_FILES
 
 set(MODULE_SOURCE_FILES
     src/main.cpp
+    src/Application.cpp
+    include/Application.hpp
 )
 
 set(MODULE_LIBS    
     Resolution_${PROJECT_NAME}
     tcpLengthFramer_${PROJECT_NAME}
+    TCPClient_${PROJECT_NAME}
+    PacketEngine_${PROJECT_NAME}
+    QtGui
 )
 
 
@@ -39,13 +44,11 @@ add_subdirectory(${COMMON_DATA_DIR} commun/)
 add_subdirectory(modules)
 
 add_executable(${PROJECT_NAME} ${MODULE_SOURCE_FILES})
-add_dependencies(${MODULE_NAME} ${MODULE_LIBS})
-
 target_link_libraries(${MODULE_NAME} ${OpenCV_LIBRARIES} ${MODULE_LIBS})
 target_include_directories(${MODULE_NAME}  PUBLIC ${OpenCV_INCLUDE_DIRS})
 target_include_directories(${MODULE_NAME}  PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ele4205_project>
-    $<INSTALL_INTERFACE:include/ele4205_project>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+    $<INSTALL_INTERFACE:include/>
     PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>

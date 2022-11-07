@@ -1,3 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 add_subdirectory(Resolution)
-add_subdirectory(tcpLengthFramer)
+add_subdirectory(TCP/Client)
+add_subdirectory(TCP/Server)
+add_subdirectory(TCP/Commun/LengthFramer)
+add_subdirectory(Protocole/PacketEngine)

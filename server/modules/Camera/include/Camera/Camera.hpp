@@ -24,7 +24,7 @@ public:
      *
      * @param resolution const Resolution::Resolution_t used to redefine the definition
      */
-    void changeResolution(const Resolution::Resolution_t& resolution);
+    void changeResolution(const Resolution::Resolution_t& resolution, bool needDetectFPS = true);
     /**
      * @brief Construct a new Camera object
      *

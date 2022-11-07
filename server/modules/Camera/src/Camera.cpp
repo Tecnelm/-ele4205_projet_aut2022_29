@@ -40,6 +40,11 @@ bool Camera::startCamera(bool useThread)
     }
     this->capture_.set(CV_CAP_PROP_FRAME_WIDTH, resolution_.WIDTH);
     this->capture_.set(CV_CAP_PROP_FRAME_HEIGHT, resolution_.HEIGHT);
+    if (this->capture_.get(CV_CAP_PROP_FRAME_WIDTH) != resolution_.WIDTH)
+        std::cout << "Fail to set WIDTH resolution" << std::endl;
+    if (this->capture_.get(CV_CAP_PROP_FRAME_HEIGHT) != resolution_.HEIGHT)
+        std::cout << "Fail set HEIGHT resolution" << std::endl;
+
     cv::Mat frame;
     for (int i = 0; i < this->nImageBeforeDetectFPS_; i++) {
         this->capture_ >> frame;
@@ -99,11 +104,12 @@ cv::Mat& operator<<(cv::Mat& output, Camera& camera)
     return output;
 }
 
-void Camera::changeResolution(const Resolution_t& resolution)
+void Camera::changeResolution(const Resolution_t& resolution, bool needDetectFPS)
 {
     mutexCamera_.lock();
     this->resolution_ = resolution;
-    this->resolution_.FPS = this->detectFps();
+    if(needDetectFPS)
+        this->resolution_.FPS = this->detectFps();
     mutexCamera_.unlock();
 }
 

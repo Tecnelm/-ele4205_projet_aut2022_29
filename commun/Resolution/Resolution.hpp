@@ -8,9 +8,12 @@
  * @copyright Copyright (c) 2022
  *
  */
+#include "Protocole/AppMessages.h"
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
+
 #pragma once
 
 namespace Resolution {
@@ -42,6 +45,7 @@ struct Resolution_t {
  *
  */
 extern const std::map<std::string, Resolution_t> resolutions;
+
 /**
  * @brief Fonction discribing the behaviours of flux operator on Resolution::Resolution_t
  *
@@ -50,5 +54,8 @@ extern const std::map<std::string, Resolution_t> resolutions;
  * @return std::ostream&
  */
 std::ostream& operator<<(std::ostream& os, const Resolution_t& resolution);
+
+extern const std::map<std::string, AppMsgBit_t> resolutionsMessage;
+extern const std::map<std::string, AppMsgBit_t> formatMessage;
 
 }
