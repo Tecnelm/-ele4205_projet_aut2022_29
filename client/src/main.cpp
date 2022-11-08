@@ -11,7 +11,11 @@ int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
     ConfigWindow configWindow;
+    #ifdef LOCAL 
+    Application mainApplication(PORT, configWindow, "127.0.0.1");
+    #else
     Application mainApplication(PORT, configWindow);
+    #endif
 
     configWindow.setCloseCallback(
         [&]() {
@@ -21,14 +25,17 @@ int main(int argc, char** argv)
     configWindow.setChangeConfigurationCallback([&](const string& resolution, const string& format) {
         mainApplication.setResolutionAndFormat(resolution, format);
     });
-
-    thread mainthread([&]() {
-        mainApplication.process();
+    configWindow.setConnectionCallback([&]() {
+        mainApplication.connect();
     });
+    
+    
     configWindow.show();
+    mainApplication.connect();
     int res = app.exec();
     if (res != 0)
         mainApplication.quitApp();
-    mainthread.join();
+    if (mainApplication.getProcess().joinable())
+        mainApplication.getProcess().join();
     return res;
 }

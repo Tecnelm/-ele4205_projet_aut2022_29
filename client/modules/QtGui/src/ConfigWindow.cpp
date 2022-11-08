@@ -2,16 +2,19 @@
 #include "Resolution/Resolution.hpp"
 #include "Worker.hpp"
 #include "qt5/QtCore/QThread"
+#include "qt5/QtGui/QKeyEvent"
 #include "ressources/ui_ele4205.h"
 #include <iostream>
-#include "qt5/QtGui/QKeyEvent"
+#include <qt5/QtWidgets/QMessageBox>
 
 ConfigWindow::ConfigWindow(QWidget* parent)
     : QWidget(parent)
     , ui_(new Ui::Ele4205)
-    ,changeSize_(true)
+    , changeSize_(true)
 {
+    qRegisterMetaType<std::string>("std::string");
     ui_->setupUi(this);
+
     changeConfigurationClicked_ = [](const std::string& a, const std::string& b) {};
     closeCallback_ = []() {};
     for (auto& resolution : Resolution::resolutionsMessage) {
@@ -21,13 +24,10 @@ ConfigWindow::ConfigWindow(QWidget* parent)
     for (auto& format : Resolution::formatMessage) {
         ui_->FormatCombotBox->addItem(QString::fromStdString(format.first));
     }
-}
-
-ConfigWindow::ConfigWindow(std::function<void(const std::string&, const std::string&)> changeConfigurationClicked, std::function<void(void)> onCloseCallback, QWidget* parent)
-    : ConfigWindow(parent)
-{
-    changeConfigurationClicked_ = changeConfigurationClicked;
-    closeCallback_ = onCloseCallback;
+    connect(this, &ConfigWindow::showError, this, &ConfigWindow::showErrorMessage);
+    adjustSize();
+    setMaximumSize(size());
+    setMinimumSize(size());
 }
 
 ConfigWindow::~ConfigWindow()
@@ -65,7 +65,7 @@ bool ConfigWindow::event(QEvent* event)
     if (event->type() == QEvent::Close) {
         closeCallback_();
     } else if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *ke = static_cast<QKeyEvent *>(event); 
+        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
         if (ke->key() == Qt::Key_Escape) {
             close();
         }
@@ -75,19 +75,38 @@ bool ConfigWindow::event(QEvent* event)
 
 void ConfigWindow::setImage(const QImage& image)
 {
-    ui_->imageLabel->setPixmap(QPixmap::fromImage(image));
-    if (changeSize_)
-    {
-        setMinimumSize(0,0);
-        setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
+    if (changeSize_) {
+        changeSize_ = false;
+        setMinimumSize(0, 0);
+        setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+        ui_->imageLabel->setPixmap(QPixmap::fromImage(image));
+        ui_->imageLabel->adjustSize();
+        ui_->widget->adjustSize();
         adjustSize();
-        setMaximumSize(size());
+        adjustSize();
         setMinimumSize(size());
-
+        setMaximumSize(size());
+    } else {
+        ui_->imageLabel->setPixmap(QPixmap::fromImage(image));
     }
 }
 
 void ConfigWindow::updateSize()
 {
     changeSize_ = true;
+}
+
+void ConfigWindow::showErrorMessage(const std::string& message)
+{
+    QMessageBox messageBox(this);
+    messageBox.critical(0, "Error", message.c_str());
+}
+
+void ConfigWindow::on_ConnectButton_clicked()
+{
+    connectionCallback_();
+}
+void ConfigWindow::setConnectionCallback(std::function<void(void)> connectionCallback)
+{
+    connectionCallback_ = connectionCallback;
 }

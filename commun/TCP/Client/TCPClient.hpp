@@ -23,6 +23,7 @@ class TCPClient : public TCPreadWrite{
 public:
 
     TCPClient(std::string serverIP ,int serverPort, bool connectUpon = false);
+    TCPClient();
     ~TCPClient();
 
     TCPStatus_t connectToServ();
@@ -32,6 +33,8 @@ public:
     int32_t sendData(std::vector<uint8_t>& data) override;
 
     int32_t readData(std::vector<uint8_t>& data) override;
+
+    const bool isConnected() const;
 
 private:
 
@@ -43,3 +46,4 @@ private:
 
     bool serverConnected;
 };
+

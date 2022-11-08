@@ -9,6 +9,10 @@ set (CMAKE_CXX_STANDARD 11)
 include(make-documentation)
 include_directories( ${COMMON_DATA_DIR})
 list(APPEND CMAKE_PREFIX_PATH <PackageName>[version])
+if(NOT ${USE_CROSS_COMPILE_ODROID_POKY})
+    list(APPEND CMAKE_CXX_FLAGS "-DLOCAL")
+endif()
+
 add_subdirectory(client)
 add_subdirectory(server)
 

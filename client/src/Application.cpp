@@ -11,10 +11,8 @@
 
 #include "Application.hpp"
 #include "Resolution/Resolution.hpp"
-#include <TCP/Client/TCPClient.hpp>
 
 #include "Protocole/AppMessages.h"
-#include "Protocole/PacketEngine/PacketEngine.hpp"
 
 #include <arpa/inet.h>
 #include <chrono>
@@ -28,11 +26,13 @@
 #include <time.h>
 #include <unistd.h>
 
-Application::Application(int port, ConfigWindow& configWindow)
+Application::Application(int port, ConfigWindow& configWindow, std::string address)
     : port_(port)
     , configWindow_(configWindow)
     , resolution_(Resolution::resolutionsMessage.begin()->first)
     , format_(Resolution::formatMessage.begin()->first)
+    , client_(address, port)
+    , address_(address)
 {
 }
 
@@ -48,48 +48,29 @@ void Application::quitApp()
 
 void Application::process()
 {
-    TCPClient client = TCPClient("127.0.0.1", port_, true);
-
-    printf("connected ! \n");
-
-    PacketEngine pEngine = PacketEngine(&client);
-
-    if (pEngine.receivePacket() < 0) {
-        perror("Error on read");
-        exit(EXIT_FAILURE);
-    }
-
-    if (pEngine.getType() != dataTypes_t::COMPRESS_IMG) {
-        perror("Bad dataType received");
-        exit(EXIT_FAILURE);
-    }
-
-    std::vector<uint8_t> tempData = pEngine.getImg();
-    cv::Mat dec_image = cv::imdecode(tempData, cv::IMREAD_ANYCOLOR);
-    showImg(dec_image);
-
-    while (!quitApp_) {
-
-        uint32_t message = createMessage(resolution_, format_);
-
-        pEngine.sendMsg(message);
-
-        if (pEngine.receivePacket() < 0) {
-            perror("Error on read");
-            exit(EXIT_FAILURE);
+    if (client_.isConnected()) {
+        PacketEngine pEngine = PacketEngine(&client_);
+        cv::Mat dec_image;
+        if (readImage(pEngine, dec_image)) {
+            showImg(dec_image);
         }
+        dec_image.~Mat();
+        while (!quitApp_ && client_.isConnected()) {
 
-        if (pEngine.getType() != dataTypes_t::COMPRESS_IMG) {
-            perror("Bad dataType received");
-            exit(EXIT_FAILURE);
+            uint32_t message = createMessage(resolution_, format_);
+
+            pEngine.sendMsg(message);
+            cv::Mat dec_image;
+            if (readImage(pEngine, dec_image)) {
+                showImg(dec_image);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(30));
         }
-
-        tempData = pEngine.getImg();
-        dec_image = cv::imdecode(tempData, cv::IMREAD_ANYCOLOR);
-        showImg(dec_image);
-        std::this_thread::sleep_for(std::chrono::milliseconds(30));
+        if (quitApp_) {
+            pEngine.sendMsg(AppMsgBit_t::ELE4205_QUIT);
+            client_.disconnectFromServ();
+        }
     }
-    pEngine.sendMsg(AppMsgBit_t::ELE4205_QUIT);
 }
 
 uint32_t Application::createMessage(const std::string& resolution, const std::string& format)
@@ -97,16 +78,21 @@ uint32_t Application::createMessage(const std::string& resolution, const std::st
     uint32_t message = AppMsgBit_t::ELE4205_OK;
     static std::string lastResolution = Resolution::resolutionsMessage.begin()->first;
     static std::string lastFormat = Resolution::formatMessage.begin()->first;
+    if (resolution == "" && format == "") {
+        lastResolution = Resolution::resolutionsMessage.begin()->first;
+        lastFormat = Resolution::formatMessage.begin()->first;
 
-    if (lastResolution != resolution) {
-        message |= Resolution::resolutionsMessage.at(resolution);
-        lastResolution = resolution;
-        configWindow_.updateSize();
-    }
+    } else {
+        if (lastResolution != resolution) {
+            message |= Resolution::resolutionsMessage.at(resolution);
+            lastResolution = resolution;
+            configWindow_.updateSize();
+        }
 
-    if (lastFormat != format) {
-        message |= Resolution::formatMessage.at(format);
-        lastFormat = format;
+        if (lastFormat != format) {
+            message |= Resolution::formatMessage.at(format);
+            lastFormat = format;
+        }
     }
 
     return message;
@@ -114,5 +100,54 @@ uint32_t Application::createMessage(const std::string& resolution, const std::st
 
 void Application::showImg(const cv::Mat& image)
 {
-    configWindow_.setImage( QImage(image.data, image.cols, image.rows, QImage::Format_RGB888).rgbSwapped());
+    configWindow_.setImage(QImage(image.data, image.cols, image.rows, QImage::Format_RGB888).rgbSwapped().copy());
+}
+
+void Application::connect()
+{
+    if (!client_.isConnected()) {
+        client_.connectToServ();
+        if (client_.isConnected()) {
+            printf("connected ! \n");
+            createMessage("", "");
+            if (mainThread_.joinable()) {
+                mainThread_.join();
+            }
+            mainThread_ = std::thread([&]() {
+                process();
+            });
+
+        } else {
+            std::string messageError("Cannot connect to server : ");
+            messageError.append(address_);
+            emit configWindow_.showError(messageError);
+        }
+    }
+}
+
+bool Application::readImage(PacketEngine& pEngine, cv::Mat& dec_image)
+{
+    if (pEngine.receivePacket() < 0) {
+        printf("Error on read\n");
+        client_.disconnectFromServ();
+        return false;
+        // exit(EXIT_FAILURE);
+    }
+
+    if (pEngine.getType() != dataTypes_t::COMPRESS_IMG) {
+        printf("Bad dataType received\n");
+        pEngine.sendMsg(AppMsgBit_t::ELE4205_QUIT);
+        client_.disconnectFromServ();
+        return false;
+        // exit(EXIT_FAILURE);
+    }
+
+    std::vector<uint8_t> tempData = pEngine.getImg();
+    dec_image = cv::imdecode(tempData, cv::IMREAD_ANYCOLOR);
+    return true;
+}
+
+std::thread& Application::getProcess()
+{
+    return mainThread_;
 }

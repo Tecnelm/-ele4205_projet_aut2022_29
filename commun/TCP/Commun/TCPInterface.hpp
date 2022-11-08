@@ -13,6 +13,10 @@
 #include <stdint.h>
 #include <vector>
 
+/**
+ * @brief A class to provide commons interfaces to implement in inherited classes
+ * 
+ */
 class TCPreadWrite{
 
 public :

@@ -13,6 +13,13 @@
 
 PacketEngine::PacketEngine(TCPreadWrite* tcpIf) : tcpIf(tcpIf) {};
 
+/**
+ * @brief a general function to append the type of data being sent on an existing rawData packet
+ * @param type any member of dataTypes_t enum
+ * @param rawBuf a buffer of bytes rerensenting the type of the type parameter
+ * @return a value < 0, that can be interpreted as a TCPStatus_t flag, if an error occured 
+ * or the number of "Application" bytes sent when successful
+ */
 int32_t PacketEngine::_send(dataTypes_t type, std::vector<uint8_t>& rawBuf){
 
     uint32_t packetType = type;
@@ -21,8 +28,10 @@ int32_t PacketEngine::_send(dataTypes_t type, std::vector<uint8_t>& rawBuf){
     memcpy(packet.data(), &packetType, sizeof(uint32_t));
 
     packet.insert(packet.end(), rawBuf.begin(), rawBuf.end());
+
+    int32_t ret = tcpIf->sendData(packet);
     
-    return tcpIf->sendData(packet);
+    return (ret>=sizeof(uint32_t) ? ret-sizeof(uint32_t) : ret);
 }
 
 int32_t PacketEngine::receivePacket(){
@@ -49,6 +58,7 @@ dataTypes_t PacketEngine::getType(){
 }
 
 /* SEND DATA WITH TYPES HERE*/
+
 int32_t PacketEngine::sendMsg(AppMsg_t msg){
 
     std::vector<uint8_t> packetMessage = std::vector<uint8_t>(sizeof(AppMsg_t));
@@ -63,12 +73,13 @@ int32_t PacketEngine::sendImg(std::vector<uint8_t>& image){
 }
 
 /* GET DATA WITH TYPES HERE*/
+
 AppMsg_t PacketEngine::getMsg(){
 
     return (*((AppMsg_t*)dataBuff.data()));
 }
 
-std::vector<uint8_t>& PacketEngine::getImg(){
+std::vector<uint8_t> PacketEngine::getImg(){
 
-    return dataBuff;
+    return std::vector<uint8_t>(dataBuff);
 }

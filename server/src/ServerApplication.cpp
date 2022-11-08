@@ -64,13 +64,13 @@ void ServerApplication::ServerApplication::process()
 
             // waitAnswer from client
             if (pEngine.receivePacket() < 0) {
-                perror("Error on read");
-                exit(EXIT_FAILURE);
+                printf("Error on read\n");
+                break;
             }
 
             if (pEngine.getType() != dataTypes_t::APP_MESSAGE) {
-                printf("Bad dataType received");
-                exit(EXIT_FAILURE);
+                printf("Bad dataType received\n");
+                break;
             }
 
             clientAnswer = pEngine.getMsg();

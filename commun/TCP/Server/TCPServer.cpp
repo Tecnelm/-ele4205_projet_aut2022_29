@@ -26,13 +26,13 @@ TCPServer::TCPServer(int listeningPort, int reuseAddr, int connectionQueueSize) 
     listeningSocketFd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(listeningSocketFd < 0) {
-        perror("socket failed");
+        perror("\nSocket creation failed");
         //ToDO handle error
     }
 
     if(reuseAddr){
         if (setsockopt(listeningSocketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &reuseAddr, sizeof(reuseAddr))) {
-            perror("setsockopt");
+            perror("\nImpossible to set socket option");
             //ToDO handle error
         }
     }
@@ -42,12 +42,12 @@ TCPServer::TCPServer(int listeningPort, int reuseAddr, int connectionQueueSize) 
     address.sin_port = htons(listeningPort);
 
     if (bind(listeningSocketFd, (struct sockaddr*)&address, sizeof(address)) < 0) {
-        perror("bind failed");
+        perror("\nUnable to bind to port");
         //ToDO handle error
     }
 
     if (listen(listeningSocketFd, connectionQueueSize) < 0) {
-        perror("listen");
+        perror("\nUnable to start listening");
         //ToDO handle error
     }
 
@@ -67,7 +67,7 @@ int32_t TCPServer::acceptClient(){
     commSocketFd = accept(listeningSocketFd, (struct sockaddr*)&address, (socklen_t*) &addrLen);
 
     if (commSocketFd < 0) {
-        perror("Error on accept");
+        perror("\nError on accept");
         //ToDO handle error
         return TCPStatus_t::TCP_ERROR_ACCEPT;
     }
