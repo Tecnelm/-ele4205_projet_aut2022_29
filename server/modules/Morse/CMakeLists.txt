@@ -10,14 +10,14 @@ set(LIB_INCLUDE_DIR
 )
 
 set(LIB_HEADER_FILES 
-  ${LIB_INCLUDE_DIR}/Morse.hpp
-  ${LIB_INCLUDE_DIR}/MorseAlphabet.hpp
+  ${LIB_INCLUDE_DIR}/Server.hpp
+  ${LIB_INCLUDE_DIR}/Alphabet.hpp
   )
 
 
 set(LIB_SOURCE_FILES
-src/Morse.cpp
-src/MorseAlphabet.cpp
+src/Server.cpp
+src/Alphabet.cpp
 )
 
 set(MODULE_LIBS
