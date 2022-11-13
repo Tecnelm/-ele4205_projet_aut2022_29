@@ -2,12 +2,12 @@
 /**
  * @file ZBar.cpp
  * @author https://learnopencv.com/barcode-and-qr-code-scanner-using-zbar-and-opencv/
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2022-11-13
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 #include "ZBar.hpp"
 #include "zbar.h"
@@ -18,7 +18,7 @@ using namespace cv;
 using namespace zbar;
 
 // Find and decode barcodes and QR codes
-void decode(Mat& im, vector<decodedObject>& decodedObjects)
+void decode(const Mat& im, vector<decodedObject>& decodedObjects)
 {
 
     // Create zbar scanner

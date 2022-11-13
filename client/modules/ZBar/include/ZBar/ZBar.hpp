@@ -10,7 +10,7 @@ typedef struct
 } decodedObject;
 
 // Find and decode barcodes and QR codes
-void decode(cv::Mat& im, std::vector<decodedObject>& decodedObjects);
+void decode(const cv::Mat& im, std::vector<decodedObject>& decodedObjects);
 
 // Display barcode and QR code location
 void addBarcodeLocation(cv::Mat& im, std::vector<decodedObject>& decodedObjects);

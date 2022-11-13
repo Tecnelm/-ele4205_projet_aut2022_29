@@ -87,6 +87,8 @@ private:
 
     bool readImage(PacketEngine& pEngine, cv::Mat& dec_image);
 
+    void buttonpushedProcess(cv::Mat& image);
+
     /**
      * @brief Create a Message object depending on change of resolution and format
      *
