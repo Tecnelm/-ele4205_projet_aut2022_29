@@ -26,7 +26,6 @@ ConfigWindow::ConfigWindow(QWidget* parent)
     }
     connect(this, &ConfigWindow::showError, this, &ConfigWindow::showErrorMessage);
     adjustSize();
-    setMaximumSize(size());
     setMinimumSize(size());
 }
 
@@ -58,16 +57,20 @@ void ConfigWindow::setCloseCallback(std::function<void(void)> closeCallback)
 
 void ConfigWindow::setStatusLabel(const std::string& status)
 {
-    ui_->LineStatusHolder->setText(QString::fromStdString(status));
+    // ui_->LineStatusHolder->setText(QString::fromStdString(status));
+    emit ui_->LineStatusHolder->textChanged(QString::fromStdString(status));
 }
+
 bool ConfigWindow::event(QEvent* event)
 {
     if (event->type() == QEvent::Close) {
         closeCallback_();
+        return true;
     } else if (event->type() == QEvent::KeyPress) {
         QKeyEvent* ke = static_cast<QKeyEvent*>(event);
         if (ke->key() == Qt::Key_Escape) {
             close();
+            return true;
         }
     }
     return QWidget::event(event);
@@ -75,19 +78,20 @@ bool ConfigWindow::event(QEvent* event)
 
 void ConfigWindow::setImage(const QImage& image)
 {
+    QMetaObject::invokeMethod(this, "setImagePixMap", Qt::QueuedConnection, Q_ARG(QPixmap,QPixmap::fromImage(image)));
+}
+void ConfigWindow::setImagePixMap(const QPixmap& pixmap)
+{
     if (changeSize_) {
         changeSize_ = false;
         setMinimumSize(0, 0);
-        setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-        ui_->imageLabel->setPixmap(QPixmap::fromImage(image));
-        ui_->imageLabel->adjustSize();
+        ui_->imageLabel->setPixmap(pixmap);
         ui_->widget->adjustSize();
         adjustSize();
         adjustSize();
-        setMinimumSize(size());
-        setMaximumSize(size());
+
     } else {
-        ui_->imageLabel->setPixmap(QPixmap::fromImage(image));
+        ui_->imageLabel->setPixmap(pixmap);
     }
 }
 

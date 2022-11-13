@@ -55,12 +55,27 @@ public:
     void quitApp();
 
     /**
-     * @brief Conect client to server 
-     * 
+     * @brief Conect client to server
+     *
      */
     void connect();
 
+    /**
+     * @brief Return the thread containing the process running
+     *
+     * @return std::thread&
+     */
     std::thread& getProcess();
+
+    /**
+     * @brief Ask for packet and Verify if the type of a message is correct or not. If not close the the socket and stop process
+     *
+     * @param pEngine
+     * @param type dataTypes_t wanted
+     * @return true type is correct
+     * @return false error when reading message
+     */
+    bool getPacket(PacketEngine& pEngine, const dataTypes_t& type);
 
 private:
     /**
@@ -107,20 +122,26 @@ private:
     const int port_;
 
     /**
-     * @brief Address where the client is currently connected 
-     * 
+     * @brief Address where the client is currently connected
+     *
      */
     std::string address_;
 
     /**
-     * @brief TCP client linked to the server 
-     * 
+     * @brief TCP client linked to the server
+     *
      */
     TCPClient client_;
 
     /**
      * @brief thread Containing main process
-     * 
+     *
      */
     std::thread mainThread_;
+
+    /**
+     * @brief suffix to add on image name
+     *
+     */
+    static int imageCount_;
 };

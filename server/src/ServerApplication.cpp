@@ -1,5 +1,6 @@
 #include "ServerApplication.hpp"
 
+#include <fstream>
 #include <iostream>
 #include <netinet/in.h>
 #include <opencv2/opencv.hpp>
@@ -14,14 +15,16 @@ using namespace cv;
 ServerApplication::ServerApplication::ServerApplication(int imagePort)
     : imagePort_(imagePort)
     , server_(imagePort_)
-    , cam_(),
-    stop_(false)
+    , cam_()
+    , stop_(false)
 {
-
+    configGPIO_();
 }
 
 void ServerApplication::ServerApplication::process()
 {
+    const uint16_t adcThresholdValue = 1010;
+
     while (!stop_) {
 
         printf("Waiting for a client to connect...\n");
@@ -32,13 +35,27 @@ void ServerApplication::ServerApplication::process()
 
         PacketEngine pEngine = PacketEngine(&server_);
 
-        AppMsg_t clientAnswer = Resolution::resolutionsMessage.begin()->second|Resolution::formatMessage.begin()->second;
+        AppMsg_t clientAnswer = Resolution::resolutionsMessage.begin()->second | Resolution::formatMessage.begin()->second;
+        updateAcqConf(clientAnswer, imgConf_);
 
         cv::Mat tempImage;
 
         std::string oldRes = "";
 
-        do {
+        // waitAnswer from client
+        if (pEngine.receivePacket() < 0) {
+            printf("Error on read\n");
+            break;
+        }
+
+        if (pEngine.getType() != dataTypes_t::APP_MESSAGE) {
+            printf("Bad dataType received\n");
+            break;
+        }
+
+        clientAnswer = pEngine.getMsg();
+
+        while ((clientAnswer & AppMsgBit_t::ELE4205_QUIT) == 0) {
 
             updateAcqConf(clientAnswer, imgConf_);
 
@@ -50,32 +67,56 @@ void ServerApplication::ServerApplication::process()
                 cam_.startCamera();
             }
 
-            // Take an image from the camera
-            tempImage << cam_;
+            if ((clientAnswer & AppMsgBit_t::ELE4205_OK) && (clientAnswer & AppMsgBit_t::ELE4205_ASK_IMAGE)) {
+                // Take an image from the camera
+                tempImage << cam_;
 
-            // Compress the image as jpeg
-            std::vector<uint8_t> mem_buffer;
-            cv::imencode(imgConf_.compressionType, tempImage, mem_buffer, imgConf_.compressionSettings);
+                // Compress the image as jpeg
+                std::vector<uint8_t> mem_buffer;
+                cv::imencode(imgConf_.compressionType, tempImage, mem_buffer, imgConf_.compressionSettings);
 
-            // send the compressed image over tcp
-            pEngine.sendImg(mem_buffer);
+                // send the compressed image over tcp
+                pEngine.sendImg(mem_buffer);
 
-            // printf("Pic taken & sent\n");
+            } else if (clientAnswer & AppMsgBit_t::ELE4205_OK) {
+
+                AppMsg_t serverAnswer = AppMsgBit_t::ELE4205_DEFAULT;
+
+                if (getADCValue_() > adcThresholdValue) {
+                    serverAnswer |= AppMsgBit_t::ELE4205_IDOWN;
+                } else {
+
+                    static bool previousButtonState = false;
+                    bool buttonState = buttonPushed_();
+
+                    if (buttonState && !previousButtonState){
+                        serverAnswer |= AppMsgBit_t::ELE4205_PUSHB;
+                    }
+                    else{
+                        serverAnswer |= AppMsgBit_t::ELE4205_READY;
+                    }
+
+                    if (buttonState != previousButtonState)
+                    {
+                        previousButtonState = buttonState;
+                    }
+                    
+                }
+
+                pEngine.sendMsg(serverAnswer);
+            }
 
             // waitAnswer from client
             if (pEngine.receivePacket() < 0) {
                 printf("Error on read\n");
                 break;
             }
-
             if (pEngine.getType() != dataTypes_t::APP_MESSAGE) {
                 printf("Bad dataType received\n");
                 break;
             }
-
             clientAnswer = pEngine.getMsg();
-
-        } while (clientAnswer != AppMsgBit_t::ELE4205_QUIT);
+        }
 
         server_.disconnectClient();
 
@@ -85,10 +126,56 @@ void ServerApplication::ServerApplication::process()
     }
 }
 
+void ServerApplication::ServerApplication::configGPIO_(void)
+{
+
+    std::ofstream fileGpioSlct = std::ofstream("/sys/class/gpio/export");
+    fileGpioSlct << "228";
+    fileGpioSlct.close();
+
+    std::ofstream fileGpioDir = std::ofstream("/sys/class/gpio/gpio228/direction");
+    fileGpioDir << "in";
+    fileGpioDir.close();
+}
+
+bool ServerApplication::ServerApplication::buttonPushed_(void)
+{
+
+    std::string strValue;
+#ifdef LOCAL
+strValue = "1";
+#else
+    std::ifstream fileGpioValue = std::ifstream("/sys/class/gpio/gpio228/value");
+    fileGpioValue >> strValue;
+    fileGpioValue.close();
+
+    std::cout << "GPIO input = " << strValue << std::endl;
+#endif 
+
+    return strValue == "1" ? false : true;
+}
+
+uint16_t ServerApplication::ServerApplication::getADCValue_(void)
+{
+
+    std::string strValue;
+#ifdef LOCAL
+    strValue = "100";
+#else
+    std::ifstream fileADCValue = std::ifstream("/sys/class/saradc/ch0");
+    fileADCValue >> strValue;
+    fileADCValue.close();
+
+    std::cout << "ADC input = " << strValue << std::endl;
+#endif
+
+    return stoi(strValue);
+}
+
 void ServerApplication::ServerApplication::updateAcqConf(AppMsg_t msg, imgAcqConf& imgConf)
 {
 
-    for (auto res: Resolution::resolutionsMessage) {
+    for (auto res : Resolution::resolutionsMessage) {
         if (msg & res.second) {
             imgConf.res = res.first;
             break;

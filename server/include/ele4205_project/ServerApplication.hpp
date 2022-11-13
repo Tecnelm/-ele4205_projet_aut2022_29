@@ -24,6 +24,12 @@ public:
 
 private:
     void updateAcqConf(AppMsg_t msg, imgAcqConf& imgConf);
+
+    void configGPIO_(void);
+    bool buttonPushed_(void);
+    uint16_t getADCValue_(void);
+
+
     const int imagePort_;
     struct imgAcqConf imgConf_;
     TCPServer server_;

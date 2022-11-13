@@ -325,5 +325,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>LineStatusHolder</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>LineStatusHolder</receiver>
+   <slot>setText(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>158</x>
+     <y>166</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>190</x>
+     <y>161</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

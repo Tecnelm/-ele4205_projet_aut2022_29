@@ -103,6 +103,13 @@ private slots:
      */
     void showErrorMessage(const std::string& message);
 
+    /**
+     * @brief Set the image on the camera
+     *
+     * @param pixmap
+     */
+    void setImagePixMap(const QPixmap& pixmap);
+
 private:
     /**
      * @brief Desired action when clicked on button

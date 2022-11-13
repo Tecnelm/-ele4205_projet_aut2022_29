@@ -26,6 +26,8 @@
 #include <time.h>
 #include <unistd.h>
 
+int Application::imageCount_ = 0;
+
 Application::Application(int port, ConfigWindow& configWindow, std::string address)
     : port_(port)
     , configWindow_(configWindow)
@@ -48,18 +50,11 @@ void Application::quitApp()
 
 void Application::process()
 {
+    configWindow_.updateSize();
     if (client_.isConnected()) {
         PacketEngine pEngine = PacketEngine(&client_);
-        cv::Mat dec_image;
-        if (readImage(pEngine, dec_image)) {
-            showImg(dec_image);
-        }
-        dec_image.~Mat();
         while (!quitApp_ && client_.isConnected()) {
 
-            uint32_t message = createMessage(resolution_, format_);
-
-            pEngine.sendMsg(message);
             cv::Mat dec_image;
             if (readImage(pEngine, dec_image)) {
                 showImg(dec_image);
@@ -127,27 +122,60 @@ void Application::connect()
 
 bool Application::readImage(PacketEngine& pEngine, cv::Mat& dec_image)
 {
-    if (pEngine.receivePacket() < 0) {
-        printf("Error on read\n");
-        client_.disconnectFromServ();
+    pEngine.sendMsg(createMessage(resolution_, format_));
+
+    if (!getPacket(pEngine, dataTypes_t::APP_MESSAGE))
         return false;
-        // exit(EXIT_FAILURE);
+
+    AppMsg_t message = pEngine.getMsg();
+
+    if (message & AppMsgBit_t::ELE4205_PUSHB) {
+        configWindow_.setStatusLabel("PUSHB");
+    } else if (message & AppMsgBit_t::ELE4205_IDOWN) {
+        configWindow_.setStatusLabel("IDOWN");
+    } else if (message & AppMsgBit_t::ELE4205_READY) {
+        configWindow_.setStatusLabel("READY");
     }
 
-    if (pEngine.getType() != dataTypes_t::COMPRESS_IMG) {
-        printf("Bad dataType received\n");
-        pEngine.sendMsg(AppMsgBit_t::ELE4205_QUIT);
-        client_.disconnectFromServ();
-        return false;
-        // exit(EXIT_FAILURE);
-    }
+    if (message & (AppMsgBit_t::ELE4205_PUSHB | AppMsgBit_t::ELE4205_READY)) {
+        pEngine.sendMsg(AppMsgBit_t::ELE4205_OK | AppMsgBit_t::ELE4205_ASK_IMAGE);
 
-    std::vector<uint8_t> tempData = pEngine.getImg();
-    dec_image = cv::imdecode(tempData, cv::IMREAD_ANYCOLOR);
-    return true;
+        if (!getPacket(pEngine, dataTypes_t::COMPRESS_IMG))
+            return false;
+
+        std::vector<uint8_t> tempData = pEngine.getImg();
+        dec_image = cv::imdecode(tempData, cv::IMREAD_ANYCOLOR);
+        if (message & AppMsgBit_t::ELE4205_PUSHB) {
+            std::stringstream name;
+            name <<"image/image_"<< imageCount_++ << ".";
+            for (auto& c : format_)
+                name << static_cast<char>(std::tolower(c));
+            std::cout << "Save Image" << std::endl;
+            cv::imwrite(name.str(), dec_image);
+        }
+        return true;
+    }
+    return false;
 }
 
 std::thread& Application::getProcess()
 {
     return mainThread_;
+}
+
+bool Application::getPacket(PacketEngine& pEngine, const dataTypes_t& type)
+{
+    if (pEngine.receivePacket() < 0) {
+        printf("Error on read\n");
+        client_.disconnectFromServ();
+        return false;
+    }
+
+    if (pEngine.getType() != type) {
+        printf("Bad dataType received\n");
+        pEngine.sendMsg(AppMsgBit_t::ELE4205_QUIT);
+        client_.disconnectFromServ();
+        return false;
+    }
+    return true;
 }
