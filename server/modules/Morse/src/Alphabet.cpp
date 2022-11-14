@@ -3,6 +3,8 @@ namespace Morse {
 
 
 const std::map<std::string, std::vector<MorseElement>> morseAlphabet {
+    
+    //Letters
     {"A", {MorseElement::DOT,MorseElement::DASH}},
     {"B", {MorseElement::DASH,MorseElement::DOT,MorseElement::DOT,MorseElement::DOT}},
     {"C", {MorseElement::DASH,MorseElement::DOT,MorseElement::DASH,MorseElement::DOT}},
@@ -29,6 +31,8 @@ const std::map<std::string, std::vector<MorseElement>> morseAlphabet {
     {"X", {MorseElement::DASH,MorseElement::DOT,MorseElement::DOT,MorseElement::DASH}},
     {"Y", {MorseElement::DASH,MorseElement::DOT,MorseElement::DASH,MorseElement::DASH}},
     {"Z", {MorseElement::DASH,MorseElement::DASH,MorseElement::DOT,MorseElement::DOT}},
+    
+    //Numbers
     {"1", {MorseElement::DOT,MorseElement::DASH,MorseElement::DASH,MorseElement::DASH,MorseElement::DASH}},
     {"2", {MorseElement::DOT,MorseElement::DOT,MorseElement::DASH,MorseElement::DASH,MorseElement::DASH}},
     {"3", {MorseElement::DOT,MorseElement::DOT,MorseElement::DOT,MorseElement::DASH,MorseElement::DASH}},
@@ -38,7 +42,27 @@ const std::map<std::string, std::vector<MorseElement>> morseAlphabet {
     {"7", {MorseElement::DASH,MorseElement::DASH,MorseElement::DOT,MorseElement::DOT,MorseElement::DOT}},
     {"8", {MorseElement::DASH,MorseElement::DASH,MorseElement::DASH,MorseElement::DOT,MorseElement::DOT}},
     {"9", {MorseElement::DASH,MorseElement::DASH,MorseElement::DASH,MorseElement::DASH,MorseElement::DOT}},
-    {"0", {MorseElement::DASH,MorseElement::DASH,MorseElement::DASH,MorseElement::DASH,MorseElement::DASH}} 
+    {"0", {MorseElement::DASH,MorseElement::DASH,MorseElement::DASH,MorseElement::DASH,MorseElement::DASH}}, 
+    
+    //Ponctuation 
+    {".", {MorseElement::DOT,MorseElement::DASH,MorseElement::DOT,MorseElement::DASH,MorseElement::DOT,MorseElement::DASH}}, 
+    {",", {MorseElement::DASH,MorseElement::DASH,MorseElement::DOT,MorseElement::DOT,MorseElement::DASH,MorseElement::DASH}}, 
+    {"?", {MorseElement::DOT,MorseElement::DOT,MorseElement::DASH,MorseElement::DASH,MorseElement::DOT,MorseElement::DOT}}, 
+    {"'", {MorseElement::DOT,MorseElement::DASH,MorseElement::DASH,MorseElement::DASH,MorseElement::DASH,MorseElement::DOT}}, 
+    {"!", {MorseElement::DASH,MorseElement::DOT,MorseElement::DASH,MorseElement::DOT,MorseElement::DASH,MorseElement::DASH}}, 
+    {"/", {MorseElement::DASH,MorseElement::DOT,MorseElement::DOT,MorseElement::DASH,MorseElement::DOT}}, 
+    {"(", {MorseElement::DASH,MorseElement::DOT,MorseElement::DASH,MorseElement::DASH,MorseElement::DOT}}, 
+    {")", {MorseElement::DASH,MorseElement::DOT,MorseElement::DASH,MorseElement::DASH,MorseElement::DOT,MorseElement::DASH}}, 
+    {"&", {MorseElement::DOT,MorseElement::DASH,MorseElement::DOT,MorseElement::DOT,MorseElement::DOT}}, 
+    {":", {MorseElement::DASH,MorseElement::DASH,MorseElement::DASH,MorseElement::DOT,MorseElement::DOT,MorseElement::DOT}}, 
+    {";", {MorseElement::DASH,MorseElement::DOT,MorseElement::DASH,MorseElement::DOT,MorseElement::DASH,MorseElement::DOT}}, 
+    {"=", {MorseElement::DASH,MorseElement::DOT,MorseElement::DOT,MorseElement::DOT,MorseElement::DASH}}, 
+    {"+", {MorseElement::DOT,MorseElement::DASH,MorseElement::DOT,MorseElement::DASH}}, 
+    {"-", {MorseElement::DASH,MorseElement::DOT,MorseElement::DOT,MorseElement::DOT,MorseElement::DOT,MorseElement::DASH}}, 
+    {"_", {MorseElement::DOT,MorseElement::DOT,MorseElement::DASH,MorseElement::DASH,MorseElement::DOT,MorseElement::DASH}}, 
+    {"\"",{MorseElement::DOT,MorseElement::DASH,MorseElement::DOT,MorseElement::DOT,MorseElement::DASH,MorseElement::DOT}}, 
+    {"$", {MorseElement::DOT,MorseElement::DOT,MorseElement::DOT,MorseElement::DASH,MorseElement::DOT,MorseElement::DOT,MorseElement::DASH}}, 
+    {"@", {MorseElement::DOT,MorseElement::DASH,MorseElement::DASH,MorseElement::DOT,MorseElement::DASH,MorseElement::DOT}} 
 };
 
 } // namespace Morse
