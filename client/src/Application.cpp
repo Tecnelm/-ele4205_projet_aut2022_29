@@ -14,6 +14,7 @@
 
 #include "Protocole/AppMessages.h"
 
+#include "ZBar/ZBar.hpp"
 #include <arpa/inet.h>
 #include <chrono>
 #include <iostream>
@@ -146,18 +147,32 @@ bool Application::readImage(PacketEngine& pEngine, cv::Mat& dec_image)
         std::vector<uint8_t> tempData = pEngine.getImg();
         dec_image = cv::imdecode(tempData, cv::IMREAD_ANYCOLOR);
         if (message & AppMsgBit_t::ELE4205_PUSHB) {
-            std::stringstream name;
-            name <<"image/image_"<< imageCount_++ << ".";
-            for (auto& c : format_)
-                name << static_cast<char>(std::tolower(c));
-            std::cout << "Save Image" << std::endl;
-            cv::imwrite(name.str(), dec_image);
+            buttonpushedProcess(dec_image);
         }
         return true;
     }
     return false;
 }
 
+void Application::buttonpushedProcess(cv::Mat& image)
+{
+    std::thread t([=]() {
+        std::stringstream name;
+        name << "image/image_" << imageCount_++ << ".";
+        for (auto& c : format_)
+            name << static_cast<char>(std::tolower(c));
+        std::cout << "Save Image" << std::endl;
+#ifndef LOCAL
+        cv::imwrite(name.str(), image);
+#endif
+        std::vector<ZBar::decodedObject> decodedObjects;
+
+        // Find and decode barcodes and QR codes
+        ZBar::decode(image, decodedObjects);
+        std::cout << "Button Pushed" << std::endl;
+    });
+    t.detach();
+}
 std::thread& Application::getProcess()
 {
     return mainThread_;

@@ -29,6 +29,7 @@ set(MODULE_LIBS
     TCPClient_${PROJECT_NAME}
     PacketEngine_${PROJECT_NAME}
     QtGui
+    ZBar
 )
 
 

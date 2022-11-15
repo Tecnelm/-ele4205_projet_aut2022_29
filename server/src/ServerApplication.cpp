@@ -89,18 +89,15 @@ void ServerApplication::ServerApplication::process()
                     static bool previousButtonState = false;
                     bool buttonState = buttonPushed_();
 
-                    if (buttonState && !previousButtonState){
+                    if (buttonState && !previousButtonState) {
                         serverAnswer |= AppMsgBit_t::ELE4205_PUSHB;
-                    }
-                    else{
+                    } else {
                         serverAnswer |= AppMsgBit_t::ELE4205_READY;
                     }
 
-                    if (buttonState != previousButtonState)
-                    {
+                    if (buttonState != previousButtonState) {
                         previousButtonState = buttonState;
                     }
-                    
                 }
 
                 pEngine.sendMsg(serverAnswer);
@@ -143,14 +140,17 @@ bool ServerApplication::ServerApplication::buttonPushed_(void)
 
     std::string strValue;
 #ifdef LOCAL
-strValue = "1";
+    static int cnt = 0;
+    cnt = (cnt + 1) % 30;
+    strValue = cnt==0? "1":"0";
+
 #else
     std::ifstream fileGpioValue = std::ifstream("/sys/class/gpio/gpio228/value");
     fileGpioValue >> strValue;
     fileGpioValue.close();
 
     std::cout << "GPIO input = " << strValue << std::endl;
-#endif 
+#endif
 
     return strValue == "1" ? false : true;
 }
