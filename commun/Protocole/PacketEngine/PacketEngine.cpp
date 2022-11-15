@@ -72,6 +72,12 @@ int32_t PacketEngine::sendImg(std::vector<uint8_t>& image){
     return _send(dataTypes_t::COMPRESS_IMG, image);
 }
 
+int32_t sendStr(std::string& str){
+
+    std::vector<uint8_t> packetStr = std::vector<uint8_t>(str.begin(), str.end());
+    return _send(dataTypes_t::STR_MESSAGE, packetStr);
+}
+
 /* GET DATA WITH TYPES HERE*/
 
 AppMsg_t PacketEngine::getMsg(){
@@ -82,4 +88,9 @@ AppMsg_t PacketEngine::getMsg(){
 std::vector<uint8_t> PacketEngine::getImg(){
 
     return std::vector<uint8_t>(dataBuff);
+}
+
+std::string PacketEngine::getStr(){
+
+    return std::string(dataBuff.begin(), dataBuff.end()); 
 }
