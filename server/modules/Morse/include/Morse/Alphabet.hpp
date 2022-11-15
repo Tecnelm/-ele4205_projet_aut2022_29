@@ -12,6 +12,6 @@ enum MorseElement {
     MEDIUM_GAP = 7 * unit_time // between words
 };
 
-extern const std::map<std::string, std::vector<MorseElement>> morseAlphabet;
+extern const std::map<char, std::vector<MorseElement>> morseAlphabet;
 
 }

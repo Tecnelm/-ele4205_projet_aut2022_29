@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <time.h>
 #include <unistd.h>
+#include "Morse/Server.hpp"
 using namespace cv;
 
 ServerApplication::ServerApplication::ServerApplication(int imagePort)

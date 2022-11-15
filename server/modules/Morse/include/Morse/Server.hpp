@@ -6,5 +6,8 @@
 namespace Morse
 {
 
+    void serveurCodeMorse(void);
+    const int portServeurCodeMorse = 4100;
+
 
 }

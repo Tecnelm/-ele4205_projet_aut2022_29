@@ -1,5 +1,6 @@
 #include "Server.hpp"
 #include "Device.hpp"
+#include "Alphabet.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -11,14 +12,15 @@
 #include <sys/socket.h>
 #include <time.h>
 #include <unistd.h>
+#include "Device.hpp"
+#include <vector>
 
 namespace Morse{
 
-    const int portServeurCodeMorse = 4100;
 
-    void serveurCodeMorse(void){
+    void serveurCodeMorse(int port ){
 
-        TCPServer morseServer = TCPServer(portServeurCodeMorse);
+        TCPServer morseServer = TCPServer(port);
 
         printf("Waiting for a client to connect...\n");
 
@@ -40,8 +42,24 @@ namespace Morse{
         }
 
         std::string morseCodeString = pEngine.getStr();
-
+        MorseDevice morsePlayer(440,50);
         /* fuck around with the string */
+        for (char& c : morseCodeString)
+        {
+            if (c ==' ')
+            {
+                morsePlayer.playDuration(MorseElement::MEDIUM_GAP);
+            }else 
+            {
+                std::vector<MorseElement> elems = morseAlphabet.at(c);
+                for (auto& morseElement : elems)
+                {
+                    morsePlayer.playDuration(morseElement);
+                    morsePlayer.playDuration(MorseElement::INTER_ELEM);
+                }
+                    morsePlayer.playDuration(MorseElement::SHORT_GAP);
+            }
+        }
         std::cout << morseCodeString << std::endl;
     }
 }
