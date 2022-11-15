@@ -13,6 +13,7 @@
 #include "../AppMessages.h"
 #include "TypesEnum.h"
 #include <cstring>
+#include <string>
 #include <vector>
 
 /**
@@ -50,6 +51,14 @@ public:
     int32_t sendImg(std::vector<uint8_t>& image);
 
     /**
+     * @brief Send a string through the TCP stream
+     * @param str 
+     * @return a value < 0, that can be interpreted as a TCPStatus_t flag, if an error occured 
+     * or the number of "Application" bytes sent when successful
+     */
+    int32_t sendStr(std::string& str);
+
+    /**
      * @brief Poll for a new packet from the stream to arrive.
      * This function will block until a full new packet is received or if an error occured on the socket
      * @return a value < 0, that can be interpreted as a TCPStatus_t flag, if an error occured 
@@ -68,6 +77,12 @@ public:
      * @return the AppMsg_t converted from the "raw" data received from the stream
      */
     AppMsg_t getMsg();
+
+    /**
+     * @brief Convert the data juste received using receivePacket() function to a string
+     * @return std::string converted from the "raw" data received from the stream
+     */
+    std::string getStr();
 
     /**
      * @brief Convert the data just received using receivePacket() function to a std::vector<uint8_t>

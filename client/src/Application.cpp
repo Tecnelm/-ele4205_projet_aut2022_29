@@ -26,6 +26,7 @@
 #include <thread>
 #include <time.h>
 #include <unistd.h>
+#include <vector>
 
 int Application::imageCount_ = 0;
 
@@ -37,6 +38,7 @@ Application::Application(int port, ConfigWindow& configWindow, std::string addre
     , client_(address, port)
     , address_(address)
 {
+    configWindow_.setStatusLabel("Disconnected");
 }
 
 void Application::setResolutionAndFormat(const std::string& resolution, const std::string& format)
@@ -67,6 +69,7 @@ void Application::process()
             client_.disconnectFromServ();
         }
     }
+    configWindow_.setStatusLabel("Disconnected");
 }
 
 uint32_t Application::createMessage(const std::string& resolution, const std::string& format)
@@ -170,6 +173,23 @@ void Application::buttonpushedProcess(cv::Mat& image)
         // Find and decode barcodes and QR codes
         ZBar::decode(image, decodedObjects);
         std::cout << "Button Pushed" << std::endl;
+
+        if (decodedObjects.empty() == false) {
+
+            TCPClient morseCLient = TCPClient(address_, 4100, true);
+
+            if (morseCLient.isConnected()) {
+
+                std::cout << "Envoie du code morse lu" << std::endl;
+                PacketEngine morsePEngine = PacketEngine(&morseCLient);
+
+                if (decodedObjects.empty() == false)
+                    morsePEngine.sendStr(decodedObjects[0].data);
+
+                morseCLient.disconnectFromServ();
+            } else
+                std::cout << "Echec de la connexion au serveur" << std::endl;
+        }
     });
     t.detach();
 }

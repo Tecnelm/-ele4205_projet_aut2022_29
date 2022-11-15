@@ -10,7 +10,6 @@
  */
 #include "ServerApplication.hpp"
 
-
 #define PORT 4099
 
 int main(int argc, char const* argv[]) {
