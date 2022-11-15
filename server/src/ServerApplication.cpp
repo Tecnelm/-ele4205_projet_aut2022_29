@@ -93,6 +93,13 @@ void ServerApplication::ServerApplication::process()
                     if (buttonState && !previousButtonState) {
                         serverAnswer |= AppMsgBit_t::ELE4205_PUSHB;
 
+                        static std::thread morsePlayerThread;
+                        if (!morsePlayerThread.joinable())
+                        {
+                            morsePlayerThread = std::thread([](){
+                                Morse::serveurCodeMorse();
+                            });
+                        }
                         //todo Start the morseCodeServer here
                     } else {
                         serverAnswer |= AppMsgBit_t::ELE4205_READY;
