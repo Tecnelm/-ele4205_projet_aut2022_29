@@ -91,6 +91,8 @@ void ServerApplication::ServerApplication::process()
 
                     if (buttonState && !previousButtonState) {
                         serverAnswer |= AppMsgBit_t::ELE4205_PUSHB;
+
+                        //todo Start the morseCodeServer here
                     } else {
                         serverAnswer |= AppMsgBit_t::ELE4205_READY;
                     }
