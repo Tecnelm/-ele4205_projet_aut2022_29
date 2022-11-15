@@ -22,11 +22,11 @@ void serveurCodeMorse(int port)
 
     TCPServer morseServer = TCPServer(port);
 
-    printf("Waiting for a client to connect...\n");
+    printf("Waiting for a client Morse to connect...\n");
 
     int clientPort = morseServer.acceptClient();
 
-    printf("Client connected on port : %d\n", clientPort);
+    printf("Client Morse connected on port : %d\n", clientPort);
 
     PacketEngine pEngine = PacketEngine(&morseServer);
 
@@ -44,19 +44,21 @@ void serveurCodeMorse(int port)
     std::string morseCodeString = pEngine.getStr();
     MorseDevice morsePlayer(440, 50);
     /* fuck around with the string */
+    std::cout << "String received = " << morseCodeString << std::endl;
     for (char& c : morseCodeString) {
         c = toupper(c);
         if (c == ' ') {
-            morsePlayer.playDuration(MorseElement::MEDIUM_GAP);
+            usleep(MorseElement::MEDIUM_GAP * 1000);
+
         } else {
             std::vector<MorseElement> elems = morseAlphabet.at(c);
             for (auto& morseElement : elems) {
                 morsePlayer.playDuration(morseElement);
-                morsePlayer.playDuration(MorseElement::INTER_ELEM);
+                usleep(MorseElement::INTER_ELEM * 1000);
             }
-            morsePlayer.playDuration(MorseElement::SHORT_GAP);
+            usleep(MorseElement::SHORT_GAP * 1000);
         }
     }
-    std::cout << morseCodeString << std::endl;
+    std::cout << "Morse Code Played Kill server" << std::endl;
 }
 }

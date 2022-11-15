@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 namespace Morse {
-const int unit_time = 10; // unit time in ms
+const int unit_time = 60; // unit time in ms
 enum MorseElement {
     DOT = unit_time,
     DASH = 3 * unit_time,

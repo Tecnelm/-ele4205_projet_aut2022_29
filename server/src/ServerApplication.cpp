@@ -1,5 +1,6 @@
 #include "ServerApplication.hpp"
 
+#include "Morse/Server.hpp"
 #include <fstream>
 #include <iostream>
 #include <netinet/in.h>
@@ -10,7 +11,6 @@
 #include <sys/socket.h>
 #include <time.h>
 #include <unistd.h>
-#include "Morse/Server.hpp"
 using namespace cv;
 
 ServerApplication::ServerApplication::ServerApplication(int imagePort)
@@ -94,13 +94,19 @@ void ServerApplication::ServerApplication::process()
                         serverAnswer |= AppMsgBit_t::ELE4205_PUSHB;
 
                         static std::thread morsePlayerThread;
-                        if (!morsePlayerThread.joinable())
-                        {
-                            morsePlayerThread = std::thread([](){
+                        static bool end = true;
+                        if (end) {
+                            end = false;
+                            std::cout << "Start new Thread Morse" << std::endl;
+                            if (morsePlayerThread.joinable())
+                                morsePlayerThread.join();
+
+                            morsePlayerThread = std::thread([&]() {
                                 Morse::serveurCodeMorse();
+                                end = true;
                             });
                         }
-                        //todo Start the morseCodeServer here
+                        // todo Start the morseCodeServer here
                     } else {
                         serverAnswer |= AppMsgBit_t::ELE4205_READY;
                     }
@@ -152,14 +158,14 @@ bool ServerApplication::ServerApplication::buttonPushed_(void)
 #ifdef LOCAL
     static int cnt = 0;
     cnt = (cnt + 1) % 30;
-    strValue = cnt==0? "1":"0";
+    strValue = cnt == 0 ? "1" : "0";
 
 #else
     std::ifstream fileGpioValue = std::ifstream("/sys/class/gpio/gpio228/value");
     fileGpioValue >> strValue;
     fileGpioValue.close();
 
-    std::cout << "GPIO input = " << strValue << std::endl;
+    // std::cout << "GPIO input = " << strValue << std::endl;
 #endif
 
     return strValue == "1" ? false : true;
@@ -176,7 +182,7 @@ uint16_t ServerApplication::ServerApplication::getADCValue_(void)
     fileADCValue >> strValue;
     fileADCValue.close();
 
-    std::cout << "ADC input = " << strValue << std::endl;
+    // std::cout << "ADC input = " << strValue << std::endl;
 #endif
 
     return stoi(strValue);
