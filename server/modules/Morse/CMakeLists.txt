@@ -21,6 +21,10 @@ src/Alphabet.cpp
 )
 
 set(MODULE_LIBS
+
+tcpLengthFramer_${PROJECT_NAME}
+TCPServer_${PROJECT_NAME}
+PacketEngine_${PROJECT_NAME}
 )
 
 add_library(${LIB_NAME}
