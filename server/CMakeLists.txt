@@ -30,6 +30,7 @@ set(MODULE_SOURCE_FILES
 
 set(MODULE_LIBS
     Camera
+    Morse
     Resolution_${PROJECT_NAME}
     tcpLengthFramer_${PROJECT_NAME}
     TCPServer_${PROJECT_NAME}
