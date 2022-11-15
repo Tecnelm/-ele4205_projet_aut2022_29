@@ -72,7 +72,7 @@ int32_t PacketEngine::sendImg(std::vector<uint8_t>& image){
     return _send(dataTypes_t::COMPRESS_IMG, image);
 }
 
-int32_t sendStr(std::string& str){
+int32_t PacketEngine::sendStr(std::string& str){
 
     std::vector<uint8_t> packetStr = std::vector<uint8_t>(str.begin(), str.end());
     return _send(dataTypes_t::STR_MESSAGE, packetStr);
