@@ -74,7 +74,10 @@ int32_t PacketEngine::sendImg(std::vector<uint8_t>& image){
 
 int32_t PacketEngine::sendStr(std::string& str){
 
-    std::vector<uint8_t> packetStr = std::vector<uint8_t>(str.begin(), str.end());
+    std::vector<uint8_t> packetStr;
+    for(char c : str)
+        packetStr.push_back((uint8_t)c);
+        
     return _send(dataTypes_t::STR_MESSAGE, packetStr);
 }
 
