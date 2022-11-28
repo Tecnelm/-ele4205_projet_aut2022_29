@@ -15,7 +15,7 @@ MorseDevice ::MorseDevice(int frequency, int dutyCycle, const std::string& drive
     fileDevice.close();
 
     fileDevice.open(driverPath_ + "/" + dutyFile_, ios::out);
-    fileDevice << (dutyCycle * (1024 / 100));
+    fileDevice << dutyCycle;
     fileDevice.close();
 }
 
