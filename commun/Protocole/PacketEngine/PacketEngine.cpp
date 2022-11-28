@@ -44,7 +44,9 @@ int32_t PacketEngine::receivePacket(){
         dataType = (dataTypes_t) (*((uint32_t*)rawDataBuff.data()));
 
         dataBuff.clear();
-        dataBuff.insert(dataBuff.cend(), rawDataBuff.begin()+sizeof(uint32_t), rawDataBuff.end());
+
+        for(auto it = rawDataBuff.begin()+sizeof(uint32_t); it != rawDataBuff.end(); ++it)
+            dataBuff.push_back(*it);
    
         return retValue-sizeof(uint32_t);
     }
@@ -77,7 +79,7 @@ int32_t PacketEngine::sendStr(std::string& str){
     std::vector<uint8_t> packetStr;
     for(char c : str)
         packetStr.push_back((uint8_t)c);
-        
+
     return _send(dataTypes_t::STR_MESSAGE, packetStr);
 }
 
