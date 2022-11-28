@@ -22,7 +22,7 @@ namespace TCPLengthFramer {
  *
  * @param in descripteur de fichier accessible en lecture
  * @param dataBuff
- * @return TCPStatus_t nombre d'octets lus
+ * @return if success, the number of bytes received (>=0), TCPStatus_t error flag (< 0) otherwise
  */
 int32_t getData(FILE* in, std::vector<uint8_t>& dataBuff);
 
@@ -31,7 +31,7 @@ int32_t getData(FILE* in, std::vector<uint8_t>& dataBuff);
  *
  * @param out descripteur de fichier accessible en ecriture
  * @param dataBuff buffer de données à envoyées
- * @return TCPStatus_t nombre d'octets envoyés
+ * @return if success, the number of bytes sent (>=0), TCPStatus_t error flag (< 0) otherwise
  */
 int32_t sendData(FILE* out, std::vector<uint8_t>& dataBuff);
 }

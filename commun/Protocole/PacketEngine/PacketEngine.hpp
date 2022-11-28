@@ -20,7 +20,7 @@
  * @brief This class provide an "high-level" interface to send and receive 
  * data with any given (and implemented) types through a TCP connection.
  * 
- * It wrap a TCPClient or TCPServer (via a common interface) and use
+ * It wrap a TCPClient or TCPServer (via a common interface "TCPreadWrite") and use
  * it to send and receive data.
  */
 class PacketEngine {

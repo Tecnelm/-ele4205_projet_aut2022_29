@@ -14,7 +14,7 @@
 #include <vector>
 
 /**
- * @brief A class to provide commons interfaces to implement in inherited classes
+ * @brief A class to provide commons read and write interfaces to implement in inherited classes
  * 
  */
 class TCPreadWrite{

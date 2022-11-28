@@ -2,11 +2,11 @@
 
 namespace Morse {
 using namespace std;
-MorseDevice ::MorseDevice(int frequency, int dutyCycle, const std::string& driverPath, const std::string& enableFile, const std::string& fequencyFile, const std::string& dutyFile)
+MorseDevice ::MorseDevice(int frequency, int dutyCycle, const std::string& driverPath, const std::string& enableFile, const std::string& frequencyFile, const std::string& dutyFile)
 {
     driverPath_ = driverPath;
     enableFile_ = enableFile;
-    frequencyFile_ = frequencyFile_;
+    frequencyFile_ = frequencyFile;
     dutyFile_ = dutyFile;
 
     ofstream fileDevice;
@@ -15,7 +15,7 @@ MorseDevice ::MorseDevice(int frequency, int dutyCycle, const std::string& drive
     fileDevice.close();
 
     fileDevice.open(driverPath_ + "/" + dutyFile_, ios::out);
-    fileDevice << dutyCycle;
+    fileDevice << dutyCycle*1024/100;
     fileDevice.close();
 }
 
