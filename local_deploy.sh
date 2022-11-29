@@ -21,6 +21,8 @@ scp ${PROGRAMPATH}/${PROGRAM} root@${TARGET_IP}:${TARGET_DIR}
 
 # Must match endsPattern in tasks.json
 echo "Program on Server on Target"
+#Activate driver on odroid 
+ssh -t root@${TARGET_IP} "sh -c 'modprobe pwm-meson ;modprobe pwm-ctrl'"
 
 # start gdbserver on target
 ssh -t root@${TARGET_IP} "sh -c 'cd ${TARGET_DIR}; ./${PROGRAM}'"
