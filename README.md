@@ -189,6 +189,12 @@ During the project we used the folowing setting in _settings.json_
 Sequence diagram of the project 
 
 ![Sequence Diagram](doc/Sequence_diagram_2_Page_2.png "Sequence diagram")
+
+## Build the doc 
+- clone the project 
+- Generate build file ( `cmake -B <build>  <-D...> .`)
+- Build documentation with doxyfile (`cmake --build <build> --target doc`)
+
 ## Script 
 #### local_deploy.sh
 Fast way to deploy the executable on target and run it. Before sending the executable compile the target. Activate driver for the buzzer on the odroid.
