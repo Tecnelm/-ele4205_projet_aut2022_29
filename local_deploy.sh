@@ -13,16 +13,15 @@ echo ${PROGRAMPATH}
 # Build
 cmake --build ${BUILD_DIR} --target $PROGRAM
 
-# kill gdbserver on target and delete old binary
-ssh root@${TARGET_IP} "sh -c '/usr/bin/killall -q ${PROGRAM}; rm -rf ${TARGET_DIR}/${PROGRAM}  exit 0'"
+# kill all instance of the program on odroid 
+ssh root@${TARGET_IP} "sh -c '/usr/bin/killall -q ${PROGRAM}; rm -rf ${TARGET_DIR}/${PROGRAM} ; exit 0'"
 
 # send the program to the target
 scp ${PROGRAMPATH}/${PROGRAM} root@${TARGET_IP}:${TARGET_DIR}
 
-# Must match endsPattern in tasks.json
 echo "Program on Server on Target"
 #Activate driver on odroid 
-ssh -t root@${TARGET_IP} "sh -c 'modprobe pwm-meson ;modprobe pwm-ctrl'"
+ssh -t root@${TARGET_IP} "sh -c 'modprobe pwm-meson ;modprobe pwm-ctrl ; exit 0'"
 
-# start gdbserver on target
+# start server on target
 ssh -t root@${TARGET_IP} "sh -c 'cd ${TARGET_DIR}; ./${PROGRAM}'"

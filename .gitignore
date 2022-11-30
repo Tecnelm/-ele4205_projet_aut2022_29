@@ -36,8 +36,8 @@ build/*
 */build/*
 */.vscode
 */odroid-deploy-gdb.sh
-*/doc/*
-doc/*
+*/doc/html/*
+doc/html/*
 *.avi
 
 # Ignore change on VScode config

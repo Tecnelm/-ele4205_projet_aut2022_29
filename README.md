@@ -59,6 +59,8 @@ structure of poky_install_dir :
 - Poky-odroid-toolchain 
 - cmake _MINIMUM VERSION 3.12_
 - build-essential 
+- zbar
+- c++ 11 
 
 #### Build OpenCV 
 You can follow this [link](https://gist.github.com/Tecnelm/fae22ae217672171c8e6aa50bf31b260) and make the necessary modification /!\ No support will be given. We assume that you know what you are doing.
@@ -85,6 +87,13 @@ Executable will be located in `build/server/ELE4205_PROJECT_server` for the serv
 - `POKY_INSTALL_DIR` : Poky odroid installation sysroot . Default value : `/opt/poky/2.1.3/`
 - `USE_CROSS_COMPILE_ODROID_POKY` : Option to set _ON_ or _OFF_ the cross compilation . Default value :`ON`  
 
+### Run programm
+ - Build executable 
+ - plug in odroid
+ - Mount connection 
+ - use `local_deploy.sh` to send the server on odroid and start it 
+ - create directory to save image. Name : **image**
+ - Start client 
 ### Vscode 
 #### Debugger
 To help Debugging on VSCode we write two debugger launch Task:
@@ -144,6 +153,7 @@ To help Debugging on VSCode we write two debugger launch Task:
 ##### Known Issue
 
 Due to implementation of vscode debugger using it with in crossplatform debugging cause a lot of delay. 
+If your computer didn't "connection failed" to the device during the connection Gui could freeze 
 
 #### Include 
 To provide good include intellisense you need to add to your _c_cpp_properties.json_ the folowing line.
@@ -175,9 +185,13 @@ During the project we used the folowing setting in _settings.json_
         ]
     }
 
-### Script 
+## Working of program
+Sequence diagram of the project 
+
+![Sequence Diagram](doc/Sequence_diagram_2_Page_2.png "Sequence diagram")
+## Script 
 #### local_deploy.sh
-Fast way to deploy the executable on target and run it. Before sending the executable compile the target. 
+Fast way to deploy the executable on target and run it. Before sending the executable compile the target. Activate driver for the buzzer on the odroid.
 
 - Deploy IP address : _192.168.7.2_
 - Programm Path on target : `/home/root/`
