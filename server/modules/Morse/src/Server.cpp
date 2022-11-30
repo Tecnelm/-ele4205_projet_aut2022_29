@@ -1,3 +1,13 @@
+/**
+ * @file Server.cpp
+ * @author clement garrigues and nathan garnier (clement.garrigues@polymtl.ca and nathan.garnier@polymtl.ca)
+ * @brief Implementation of the morse server
+ * @version 0.1
+ * @date 2022-11-30
+ *
+ * @copyright Copyright (c) 2022
+ *
+ */
 #include "Server.hpp"
 #include "Alphabet.hpp"
 #include "Device.hpp"
@@ -16,9 +26,15 @@
 
 namespace Morse {
 
+/**
+ * @brief Description of the morse server process
+ *
+ * @param port port where server listen
+ */
 void serveurCodeMorse(int port)
 {
 
+    /* Start server*/
     TCPServer morseServer = TCPServer(port);
 
     printf("Waiting for a client Morse to connect...\n");
@@ -29,7 +45,7 @@ void serveurCodeMorse(int port)
 
     PacketEngine pEngine = PacketEngine(&morseServer);
 
-    // waitAnswer from client
+    /* Wait response from the client just connected */
     if (pEngine.receivePacket() < 0) {
         printf("Error on read\n");
         return;
@@ -40,10 +56,12 @@ void serveurCodeMorse(int port)
         return;
     }
 
+    /* Start morse device  */
     std::string morseCodeString = pEngine.getStr();
     MorseDevice morsePlayer(440, 50);
     /* fuck around with the string */
     std::cout << "String received = " << morseCodeString << std::endl;
+    /* Start playing song by playing each letter of the message */
     for (char& c : morseCodeString) {
         c = toupper(c);
         if (c == ' ') {

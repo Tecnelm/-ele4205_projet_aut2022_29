@@ -1,3 +1,13 @@
+/**
+ * @file Alphabet.cpp
+ * @author clement garrigues and nathan garnier (clement.garrigues@polymtl.ca and nathan.garnier@polymtl.ca)
+ * @brief Implementation of the alphabet morse
+ * @version 0.1
+ * @date 2022-11-30
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include "Alphabet.hpp"
 namespace Morse {
 

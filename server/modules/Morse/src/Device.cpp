@@ -1,3 +1,13 @@
+/**
+ * @file Device.cpp
+ * @author clement garrigues and nathan garnier (clement.garrigues@polymtl.ca and nathan.garnier@polymtl.ca)
+ * @brief Implementation of the morse device 
+ * @version 0.1
+ * @date 2022-11-30
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include "Device.hpp"
 
 namespace Morse {
@@ -33,7 +43,8 @@ void MorseDevice::playDuration(int duration_ms)
     fileDevice.open(driverPath_ + "/" + enableFile_, ios::out);
     fileDevice << 1;
     fileDevice.close();
-    usleep(duration_ms * 1000);
+    /* Should be change according to security advice*/
+    usleep(duration_ms * 1000); 
     fileDevice.open(driverPath_ + "/" + enableFile_, ios::out);
     fileDevice << 0;
     fileDevice.close();

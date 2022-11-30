@@ -1,3 +1,13 @@
+/**
+ * @file main.cpp
+ * @author clement garrigues and nathan garnier (clement.garrigues@polymtl.ca and nathan.garnier@polymtl.ca)
+ * @brief test executable for the morse device 
+ * @version 0.1
+ * @date 2022-11-30
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 #include "Device.hpp"
 #include "unistd.h"
 
