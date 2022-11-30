@@ -1,11 +1,11 @@
 #include "ConfigWindow.hpp"
 #include "Resolution/Resolution.hpp"
 #include "Worker.hpp"
-#include "qt5/QtCore/QThread"
-#include "qt5/QtGui/QKeyEvent"
+#include <QThread>
+#include <QKeyEvent>
 #include "ressources/ui_ele4205.h"
 #include <iostream>
-#include <qt5/QtWidgets/QMessageBox>
+#include <QMessageBox>
 
 ConfigWindow::ConfigWindow(QWidget* parent)
     : QWidget(parent)

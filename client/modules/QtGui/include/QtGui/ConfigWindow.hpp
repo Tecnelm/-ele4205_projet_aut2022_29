@@ -11,7 +11,7 @@
 #ifndef __CONFIGWINDOW_H__
 #define __CONFIGWINDOW_H__
 
-#include "qt5/QtWidgets/QWidget"
+#include <QWidget>
 #include <functional>
 #include <string>
 

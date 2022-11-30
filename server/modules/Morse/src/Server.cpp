@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 #include <netinet/in.h>
-#include <opencv2/opencv.hpp>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

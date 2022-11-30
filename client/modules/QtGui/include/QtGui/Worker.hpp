@@ -8,8 +8,8 @@
  * @copyright Copyright (c) 2022
  *
  */
-#include "qt5/QtCore/QObject"
-#include "qt5/QtWidgets/QWidget"
+#include <QObject>
+#include <QWidget>
 #include <functional>
 #include <string>
 #ifndef __WORKER_H__

@@ -1,6 +1,6 @@
 #include "ConfigWindow.hpp"
 #include "iostream"
-#include "qt5/QtWidgets/QApplication"
+#include <QApplication>
 #include <unistd.h>
 
 int main(int argc, char* argv[])
