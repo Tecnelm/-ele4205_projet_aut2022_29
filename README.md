@@ -234,3 +234,7 @@ This script allow you to mount ethernet over usb for the odroid.
     sudo ip addr add 192.168.7.1/24 dev $IF
     sudo ip link set usb0 up
 
+## Author 
+- [GARRIGUES Clément](https://github.com/Tecnelm)
+- [GARNIER Nathan](https://gitlab.com/Nathan_G)
+
