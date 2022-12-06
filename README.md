@@ -60,7 +60,8 @@ structure of poky_install_dir :
 - cmake _MINIMUM VERSION 3.12_
 - build-essential 
 - zbar
-- c++ 11 
+- c++ 11
+- Qt5 or above
 
 #### Build OpenCV 
 You can follow this [link](https://gist.github.com/Tecnelm/fae22ae217672171c8e6aa50bf31b260) and make the necessary modification /!\ No support will be given. We assume that you know what you are doing.
