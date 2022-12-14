@@ -12,7 +12,7 @@ The objectiv of this project is to realize and application composed by :
 ## Setup environnement 
 
 To set up the environement execute the folowing command:
-> git clone git@bitbucket.org:rgourdeau/ele4205_projet_aut2022_29.git 
+> git clone git@github.com:Tecnelm/Camera_Qrcode_crossplatform.git
 
 Download poky odroid toolchain and install it.
 
